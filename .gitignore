@@ -36,3 +36,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Environment variables with API keys
+.env
+.env.local
+
+# Claude Code
+.claude/

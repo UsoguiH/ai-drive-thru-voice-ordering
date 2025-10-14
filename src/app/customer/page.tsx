@@ -12,6 +12,7 @@ export type OrderItem = {
   nameAr?: string;
   quantity: number;
   price: number;
+  customizations?: string[]; // e.g., ["no cheese", "add tomato"]
 };
 
 export type OrderState = {

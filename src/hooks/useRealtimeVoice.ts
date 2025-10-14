@@ -172,33 +172,106 @@ export function useRealtimeVoice({
     ).join("\n");
 
     if (language === "en") {
-      return `You are a friendly drive-thru assistant. Menu:\n${menuList}\n\nCRITICAL RULES - FOLLOW EXACTLY:
-1. After EVERY customer request (add, delete, modify), you MUST output the COMPLETE current order using this EXACT format:
-   "Your order is: [quantity] [item name], [quantity] [item name], ..."
-   
-2. Examples:
-   - "Your order is: 2 Cheeseburger, 1 Chicken Burger, 1 Sprite"
-   - "Your order is: 1 Large Fries"
-   - "Your order is: " (if order is empty after deletion)
+      return `You are a friendly drive-thru assistant at a burger restaurant. Menu:\n${menuList}\n\nCRITICAL RULES - FOLLOW EXACTLY:
 
-3. ALWAYS use English menu item names in "Your order is:" line (Cheeseburger, NOT برجر الجبن)
-4. ALWAYS include quantities as numbers (2 Cheeseburger, NOT Cheeseburger)
-5. This structured format MUST appear in every response after customer speaks
-6. Say "ORDER_COMPLETE" only when customer confirms they're done`;
+📋 RULE #1: MANDATORY FORMAT
+After EVERY customer request (add, delete, modify), you MUST output the COMPLETE current order using this EXACT format:
+
+"Your order is: [number] [item name], [number] [item name], [number] [item name]"
+
+✅ CORRECT Examples:
+- "Great! Your order is: 1 Cheeseburger, 1 Chicken Burger"
+- "Perfect! Your order is: 2 Cheeseburger, 1 Sprite, 1 Large Fries"
+- "Got it! Your order is: 1 Medium Fries"
+- "Removed. Your order is: 1 Cheeseburger" (after deletion)
+- "Removed. Your order is: " (if order is empty)
+
+❌ WRONG Examples (DON'T do this):
+- "Your order: cheeseburger and chicken burger" (missing "is:", quantities)
+- "You have a cheeseburger" (missing full format)
+
+🎯 Format Rules:
+1. Always use "Your order is:" followed by colon (:)
+2. Put quantity number first (1, 2, 3, etc.)
+3. Use exact English menu item names (Cheeseburger, Chicken Burger, etc.)
+4. Separate items with comma (,) or "and"
+5. This line MUST appear in every response after customer speaks
+
+🔚 Order Completion:
+Say "ORDER_COMPLETE" only when customer says "that's all", "that's it", "I'm done", or confirms they're finished
+
+💬 Speaking Style:
+- Be friendly and concise
+- Welcome customer at start
+- Use phrases like "Great", "Perfect", "Got it"
+- Ask "Would you like anything else?" after each addition
+
+🍔 Customizations:
+For burgers only (Cheeseburger, Chicken Burger, Veggie Burger), customers can add customizations:
+- no cheese
+- no lettuce
+- no tomato
+- add more tomato
+
+When a customization is requested, write it in square brackets [] after the item name:
+
+Example:
+Customer: "Cheeseburger with no lettuce and add more tomato"
+You: "Great! Your order is: 1 Cheeseburger [no lettuce, add more tomato]. Anything else?"
+
+Customer: "Chicken burger no cheese and regular cheeseburger"
+You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Would you like anything else?"`;
     } else {
-      return `أنت مساعد طلبات ودود. القائمة:\n${menuList}\n\nقواعد حاسمة - اتبعها بالضبط:
-1. بعد كل طلب من العميل (إضافة، حذف، تعديل)، يجب أن تخرج الطلب الكامل الحالي باستخدام هذا التنسيق بالضبط:
-   "طلبك هو: [الكمية] [اسم الصنف], [الكمية] [اسم الصنف], ..."
-   
-2. أمثلة:
-   - "طلبك هو: 2 برجر الجبن, 1 برجر دجاج, 1 سبرايت"
-   - "طلبك هو: 1 بطاطس كبيرة"
-   - "طلبك هو: " (إذا كان الطلب فارغاً بعد الحذف)
+      return `أنت مساعد طلبات ودود في مطعم برجر. تحدث باللغة العربية. القائمة:\n${menuList}\n\n⚠️ قاعدة حرجة - اتبعها بالضبط:
 
-3. استخدم دائماً الأسماء العربية للأصناف في سطر "طلبك هو:" (برجر الجبن، وليس Cheeseburger)
-4. ضع الكميات دائماً كأرقام (2 برجر الجبن، وليس برجر الجبن فقط)
-5. يجب أن يظهر هذا التنسيق المنظم في كل رد بعد كلام العميل
-6. قل "ORDER_COMPLETE" فقط عندما يؤكد العميل أنه انتهى`;
+📋 التنسيق الإلزامي (MANDATORY FORMAT)
+في كل رد بعد كلام العميل، يجب أن تخرج الطلب الكامل بهذا التنسيق بالضبط:
+
+طلبك هو: [رقم] [اسم صنف], [رقم] [اسم صنف]
+
+✅ أمثلة محادثة صحيحة:
+
+عميل: "عايز برجر جبن وبرجر دجاج"
+أنت: "حاضر! طلبك هو: 1 برجر الجبن, 1 برجر دجاج. تحب تضيف حاجة تانية؟"
+
+عميل: "اتنين برجر جبن"
+أنت: "تمام! طلبك هو: 2 برجر الجبن. في حاجة تانية؟"
+
+عميل: "زود سبرايت"
+أنت: "ممتاز! طلبك هو: 2 برجر الجبن, 1 سبرايت. تحب حاجة تانية؟"
+
+عميل: "برجر دجاج كمان"
+أنت: "تمام! طلبك هو: 2 برجر الجبن, 1 سبرايت, 1 برجر دجاج. حاجة تانية؟"
+
+❌ أمثلة خاطئة (لا تفعل أبداً):
+- "عندك برجر جبن وبرجر دجاج" ❌ (ناقص "طلبك هو:" والكميات)
+- "طلبك برجر جبن" ❌ (ناقص "هو:" والكمية)
+- "تمام حاضر" ❌ (ناقص الطلب بالكامل)
+
+🎯 قواعد مهمة:
+1. كل رد يجب أن يحتوي على "طلبك هو:" + كل الأصناف
+2. استخدم فاصلة (،) بين الأصناف
+3. ضع الرقم قبل اسم الصنف دائماً
+4. لو العميل قال صنفين، اكتب الصنفين في "طلبك هو:"
+5. استخدم الأسماء من القائمة بالضبط
+
+🍔 التخصيصات (Customizations):
+للبرجر فقط (برجر الجبن، برجر دجاج، برجر نباتي)، يمكن إضافة تخصيصات:
+- بدون جبن (no cheese)
+- بدون خس (no lettuce)
+- بدون طماطم (no tomato)
+- زود طماطم (add more tomato)
+
+عند طلب تخصيص، اكتبه بين قوسين [] بعد اسم الصنف:
+
+مثال:
+عميل: "برجر جبن بدون خس وزود طماطم"
+أنت: "حاضر! طلبك هو: 1 برجر الجبن [بدون خس، زود طماطم]. تحب تضيف حاجة؟"
+
+عميل: "برجر دجاج بدون جبن وبرجر جبن عادي"
+أنت: "تمام! طلبك هو: 1 برجر دجاج [بدون جبن]، 1 برجر الجبن. حاجة تانية؟"
+
+🔚 إنهاء: قل "ORDER_COMPLETE" فقط لما العميل يقول "كده كفاية" أو "خلاص"`;
     }
   }, [language]);
 
@@ -208,15 +281,15 @@ export function useRealtimeVoice({
 
     // CRITICAL FIX: Detect deletion and extract only the confirmation part
     const isDeletionMessage = /شلنا|حذف|عدلنا|أشيل|شيل|احذف|هنشيل|removed|remove|delete|cancel|تم حذف/i.test(transcript);
-    
+
     // If deletion message, only parse items AFTER confirmation phrases
     let textToParse = transcript;
     if (isDeletionMessage) {
       console.log("🗑️ Deletion detected - extracting order confirmation part only");
-      
+
       // Extract what REMAINS - text after "now you have" / "الآن عندك" / "عندك فقط" / "صار عندك"
       const confirmationMatch = transcript.match(/(?:الآن|صار|كده|now)\s+(?:عندك|عندنا|you have|order is|order has)\s+(?:فقط|only)?\s*:?\s*([^.،؟?]+)/is);
-      
+
       if (confirmationMatch && confirmationMatch[1]) {
         textToParse = confirmationMatch[1];
         console.log("✅ Extracted REMAINING order:", textToParse);
@@ -226,11 +299,11 @@ export function useRealtimeVoice({
         return [];
       }
     }
-    
+
     // Check if it's a menu listing (not deletion or order confirmation)
-    const isOrderConfirmation = /صار الطلب|الطلب الآن|عندنا|الآن عندنا|عندي|current order|order is/i.test(transcript);
+    const isOrderConfirmation = /صار الطلب|الطلب الآن|عندنا|الآن عندنا|عندي|current order|order is|طلبك/i.test(transcript);
     const isMenuListing = !isDeletionMessage && !isOrderConfirmation && /menu|قائمة|available|متاح|موجود|يوجد|we have|لدينا|نقدم/i.test(transcript);
-    
+
     if (isMenuListing) {
       console.log("📋 Detected menu listing keywords - skipping order parsing");
       return [];
@@ -238,45 +311,51 @@ export function useRealtimeVoice({
 
     // Parse items from the cleaned text
     const lowerTextToParse = textToParse.toLowerCase();
+    console.log("🔍 Parsing text:", lowerTextToParse);
 
     MENU_ITEMS.forEach((menuItem) => {
       const itemName = menuItem.name.toLowerCase();
       const itemNameAr = menuItem.nameAr;
-      
+
       // Create multiple flexible Arabic patterns - remove "ال" from anywhere
       const itemNameArFlexible = itemNameAr.replace(/ال/g, ''); // "برجر جبن"
-      
+
       // For compound names (multiple words), also match with dual form on first word
       const arabicWords = itemNameArFlexible.split(' ');
-      const dualFormPattern = arabicWords.length > 1 
+      const dualFormPattern = arabicWords.length > 1
         ? `${arabicWords[0]}(ين|ان)?\\s+${arabicWords.slice(1).join('\\s+')}`
         : `${itemNameArFlexible}(ين|ان)?`;
-      
+
       // Escape special regex characters
       const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      
-      // Build pattern array
+
+      // Build pattern array - MORE PATTERNS for better matching
       const patterns = [
         escapeRegex(itemName),
         escapeRegex(itemNameAr),
         escapeRegex(itemNameArFlexible),
-        dualFormPattern
+        dualFormPattern,
+        // Add more flexible patterns
+        escapeRegex(itemNameAr.replace(/\s+/g, '\\s*')), // flexible spacing
+        escapeRegex(itemNameArFlexible.replace(/\s+/g, '\\s*')), // flexible spacing without ال
       ];
-      
+
       // Enhanced regex to capture quantities in various formats
+      // MORE FLEXIBLE - allow more spacing variations
       const regex = new RegExp(
-        `(\\d+|one|two|three|four|five|six|seven|eight|nine|ten|واحد|اثنين|اتنين|ثنين|ثلاثة|أربعة|خمسة|ستة|سبعة|ثمانية|تسعة|عشرة)?\\s*(${patterns.join('|')})`,
+        `(\\d+|one|two|three|four|five|six|seven|eight|nine|ten|واحد|اثنين|اتنين|ثنين|ثلاثة|أربعة|خمسة|ستة|سبعة|ثمانية|تسعة|عشرة)?\\s*(?:من)?\\s*(${patterns.join('|')})`,
         'gi'
       );
       const matches = lowerTextToParse.match(regex);
 
       if (matches && matches.length > 0) {
-        console.log(`✅ MATCHED "${menuItem.name}" with pattern:`, matches);
-        
-        // Extract quantity from the match
+        console.log(`✅ MATCHED "${menuItem.name}" (${menuItem.nameAr}) with pattern:`, matches);
+
+        // Extract quantity from the match - COUNT EACH MATCH SEPARATELY
         let totalQuantity = 0;
-        
-        matches.forEach(match => {
+
+        matches.forEach((match, idx) => {
+          console.log(`  Processing match ${idx + 1}:`, match);
           const quantityMatch = match.match(/\d+|one|two|three|four|five|six|seven|eight|nine|ten|واحد|اثنين|اتنين|ثنين|ثلاثة|أربعة|خمسة|ستة|سبعة|ثمانية|تسعة|عشرة/i);
           let quantity = 1;
 
@@ -289,17 +368,23 @@ export function useRealtimeVoice({
               ستة: 6, سبعة: 7, ثمانية: 8, تسعة: 9, عشرة: 10,
             };
             quantity = numberMap[quantityStr] || parseInt(quantityStr) || 1;
+            console.log(`    Found explicit quantity: ${quantity}`);
           } else if (match.match(/ين|ان/)) {
             quantity = 2;
-            console.log(`✅ Detected Arabic dual form for "${menuItem.name}" - quantity: 2`);
+            console.log(`    Detected Arabic dual form - quantity: 2`);
+          } else {
+            console.log(`    No explicit quantity - defaulting to 1`);
           }
-          
+
           totalQuantity += quantity;
         });
+
+        console.log(`  Total quantity for "${menuItem.name}": ${totalQuantity}`);
 
         const existingItem = items.find(i => i.name === menuItem.name);
         if (existingItem) {
           existingItem.quantity += totalQuantity;
+          console.log(`  Updated existing item to quantity: ${existingItem.quantity}`);
         } else {
           items.push({
             name: menuItem.name,
@@ -307,6 +392,7 @@ export function useRealtimeVoice({
             quantity: totalQuantity,
             price: menuItem.price,
           });
+          console.log(`  Added new item with quantity: ${totalQuantity}`);
         }
       }
     });
@@ -317,72 +403,229 @@ export function useRealtimeVoice({
       return [];
     }
 
+    console.log("📦 Final parsed items:", items.map(i => `${i.name} x${i.quantity}`));
     return items;
   }, []);
 
-  // 🔥 NEW FUNCTION: Parse structured order format from agent
+  // 🔥 NEW FUNCTION: Parse structured order format from agent - ENHANCED VERSION
   const parseStructuredOrder = useCallback((transcript: string): OrderItem[] | null => {
-    // Look for "طلبك هو:" or "Your order is:" format
-    const structuredMatch = transcript.match(/(?:طلبك هو|your order is)\s*:\s*([^.،؟?]+)/i);
-    
-    if (!structuredMatch || !structuredMatch[1]) {
+    console.log("🔍🔍🔍 ATTEMPTING STRUCTURED PARSE ON:", transcript.substring(0, 200));
+
+    // CRITICAL FIX: Capture everything UNTIL period (.) or question mark, NOT stopping at commas!
+    // Arabic comma (،) is a SEPARATOR between items, not an end marker
+    const patterns = [
+      // Capture until . or ? but NOT ،
+      /(?:طلبك|طلبك)\s*(?:هو|الآن|صار|كان)?\s*:+\s*(.+?)(?:[.؟?!]|\s*تحب|\s*في\s+حاجة|\s*حاجة\s+تانية|$)/is,
+      /(?:الطلب)\s*(?:هو|الآن|صار)?\s*:+\s*(.+?)(?:[.؟?!]|\s*تحب|\s*في\s+حاجة|\s*حاجة\s+تانية|$)/is,
+      /your\s+order\s+(?:is|now)?\s*:+\s*(.+?)(?:[.?!]|\s*would\s+you|\s*anything\s+else|$)/is,
+    ];
+
+    let orderText = '';
+    let matchedPattern = -1;
+
+    for (let i = 0; i < patterns.length; i++) {
+      const match = transcript.match(patterns[i]);
+      if (match && match[1]) {
+        orderText = match[1].trim();
+        matchedPattern = i;
+        console.log(`✅ MATCHED PATTERN ${i + 1}, extracted:`, orderText);
+        break;
+      }
+    }
+
+    if (!orderText) {
+      console.log("❌ No structured format found");
       return null; // No structured format found
     }
-    
-    const orderText = structuredMatch[1].trim();
+
     console.log("🎯 FOUND STRUCTURED ORDER FORMAT:", orderText);
-    
+    console.log("📏 Order text length:", orderText.length, "characters");
+
     // Handle empty order case
-    if (!orderText || orderText.length < 2) {
-      console.log("✅ Empty order detected");
+    if (orderText.length < 3) {
+      console.log("✅ Empty order detected (very short text)");
       return [];
     }
-    
+
     const items: OrderItem[] = [];
-    
-    // Split by comma or "and"/"و"
-    const orderParts = orderText.split(/[,،]|(?:\s+and\s+)|(?:\s+و\s+)/i);
-    
-    for (const part of orderParts) {
-      const trimmedPart = part.trim();
-      if (!trimmedPart) continue;
-      
-      console.log("  📝 Parsing order part:", trimmedPart);
-      
-      // Extract quantity and item name
-      // Format: "2 برجر الجبن" or "1 Cheeseburger"
-      const partMatch = trimmedPart.match(/^(\d+)\s+(.+)$/);
-      
-      if (!partMatch) {
-        console.log("  ⚠️ Could not parse quantity from:", trimmedPart);
-        continue;
+
+    // SMART SPLITTING - respect brackets [] and don't split inside them
+    console.log("🔪 Starting smart splitting process...");
+
+    // Function to split by comma but respect brackets
+    const smartSplit = (text: string): string[] => {
+      const parts: string[] = [];
+      let current = '';
+      let bracketDepth = 0;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '[') {
+          bracketDepth++;
+          current += char;
+        } else if (char === ']') {
+          bracketDepth--;
+          current += char;
+        } else if ((char === '،' || char === ',') && bracketDepth === 0) {
+          // Only split on comma if we're not inside brackets
+          if (current.trim()) {
+            parts.push(current.trim());
+          }
+          current = '';
+        } else {
+          current += char;
+        }
       }
-      
-      const quantity = parseInt(partMatch[1]);
-      const itemText = partMatch[2].trim().toLowerCase();
-      
-      // Find matching menu item
-      const menuItem = MENU_ITEMS.find(m => {
-        const nameMatch = m.name.toLowerCase() === itemText;
-        const nameArMatch = m.nameAr === partMatch[2].trim();
-        const nameArFlexible = m.nameAr.replace(/ال/g, '').toLowerCase() === itemText;
-        return nameMatch || nameArMatch || nameArFlexible;
-      });
-      
-      if (menuItem) {
-        console.log(`  ✅ Matched item: ${menuItem.name} x${quantity}`);
-        items.push({
-          name: menuItem.name,
-          nameAr: menuItem.nameAr,
-          quantity: quantity,
-          price: menuItem.price,
-        });
+
+      // Add the last part
+      if (current.trim()) {
+        parts.push(current.trim());
+      }
+
+      return parts;
+    };
+
+    // Use smart split
+    let parts = smartSplit(orderText);
+    console.log(`  📍 Smart split (respecting brackets): found ${parts.length} parts:`, parts);
+
+    // Strategy 2: If no commas at all, try "و" or "and"
+    if (parts.length === 1) {
+      parts = orderText.split(/\s+و\s+|\s+and\s+/i);
+      console.log(`  📍 Strategy 2 (و/and): found ${parts.length} parts:`, parts);
+    }
+
+    // Filter out empty parts
+    parts = parts.filter(p => p && p.trim());
+    console.log("🎯 FINAL SPLIT RESULT:", parts.length, "parts:", parts);
+
+    for (const part of parts) {
+      const trimmedPart = part.trim();
+      if (!trimmedPart || trimmedPart.length < 2) continue;
+
+      console.log("  📝 Parsing order part:", trimmedPart);
+
+      // Extract quantity, item name, and customizations - ENHANCED
+      let quantity = 1;
+      let itemText = trimmedPart;
+      let customizations: string[] = [];
+
+      // Extract customizations from square brackets [بدون خس، زود طماطم]
+      const customizationMatch = trimmedPart.match(/^(.+?)\s*\[([^\]]+)\](.*)$/);
+      if (customizationMatch) {
+        const beforeBracket = customizationMatch[1].trim();
+        const insideBracket = customizationMatch[2].trim();
+
+        // Parse customizations inside brackets
+        customizations = insideBracket
+          .split(/[,،]/)
+          .map(c => c.trim())
+          .filter(c => c.length > 0);
+
+        console.log(`    🎨 Found customizations:`, customizations);
+
+        // Continue parsing with text before bracket
+        itemText = beforeBracket;
+      }
+
+      // Try to extract number at start
+      const numberMatch = itemText.match(/^(\d+)\s+(.+)$/);
+      if (numberMatch) {
+        quantity = parseInt(numberMatch[1]);
+        itemText = numberMatch[2].trim();
+        console.log(`    Extracted quantity ${quantity}, item: "${itemText}"`);
       } else {
-        console.log(`  ⚠️ No menu item found for: ${itemText}`);
+        console.log(`    No quantity found, defaulting to 1, item: "${itemText}"`);
+      }
+
+      // Find matching menu item - ULTRA FLEXIBLE MATCHING
+      let menuItem = MENU_ITEMS.find(m => {
+        const itemTextLower = itemText.toLowerCase();
+        const itemTextClean = itemText.replace(/ال/g, '').toLowerCase().trim();
+
+        // Try exact matches
+        if (m.name.toLowerCase() === itemTextLower) return true;
+        if (m.nameAr === itemText) return true;
+        if (m.nameAr.replace(/ال/g, '').toLowerCase().trim() === itemTextClean) return true;
+
+        // Try partial matches (contains)
+        if (itemTextLower.includes(m.name.toLowerCase())) return true;
+        if (m.name.toLowerCase().includes(itemTextLower)) return true;
+        if (itemTextClean.includes(m.nameAr.replace(/ال/g, '').toLowerCase())) return true;
+        if (m.nameAr.replace(/ال/g, '').toLowerCase().includes(itemTextClean)) return true;
+
+        return false;
+      });
+
+      // FUZZY MATCHING as last resort
+      if (!menuItem) {
+        console.log(`    No exact match, trying fuzzy matching for: "${itemText}"`);
+        const itemWords = itemText.toLowerCase().replace(/ال/g, '').split(/\s+/).filter(w => w.length > 1);
+
+        menuItem = MENU_ITEMS.find(m => {
+          const arWords = m.nameAr.toLowerCase().replace(/ال/g, '').split(/\s+/);
+          const enWords = m.name.toLowerCase().split(/\s+/);
+
+          // Check if ANY word from itemText matches ANY word from menu item
+          return itemWords.some(iw =>
+            arWords.some(aw => aw.includes(iw) || iw.includes(aw)) ||
+            enWords.some(ew => ew.includes(iw) || iw.includes(ew))
+          );
+        });
+
+        if (menuItem) {
+          console.log(`    🎯 FUZZY MATCH SUCCESS: "${itemText}" -> "${menuItem.name}"`);
+        }
+      }
+
+      if (menuItem) {
+        console.log(`  ✅ MATCHED: ${menuItem.name} (${menuItem.nameAr}) x${quantity}`);
+        if (customizations.length > 0) {
+          console.log(`    with customizations:`, customizations);
+        }
+
+        // Check if item with same customizations already exists
+        const existingItem = items.find(i =>
+          i.name === menuItem!.name &&
+          JSON.stringify(i.customizations || []) === JSON.stringify(customizations)
+        );
+
+        if (existingItem) {
+          existingItem.quantity += quantity;
+          console.log(`    Updated existing item to quantity: ${existingItem.quantity}`);
+        } else {
+          const newItem: OrderItem = {
+            name: menuItem.name,
+            nameAr: menuItem.nameAr,
+            quantity: quantity,
+            price: menuItem.price,
+          };
+
+          // Only add customizations if they exist
+          if (customizations.length > 0) {
+            newItem.customizations = customizations;
+          }
+
+          items.push(newItem);
+        }
+      } else {
+        console.log(`  ❌ NO MATCH FOUND for: "${itemText}"`);
       }
     }
-    
-    console.log("✅ Parsed structured order:", items.map(i => `${i.name} x${i.quantity}`));
+
+    console.log("✅✅✅ FINAL STRUCTURED PARSE RESULT:", items.map(i => {
+      const customText = i.customizations && i.customizations.length > 0 ? ` [${i.customizations.join(', ')}]` : '';
+      return `${i.name} x${i.quantity}${customText}`;
+    }).join(', '));
+
+    // Debug: Log full items with customizations
+    items.forEach(item => {
+      if (item.customizations && item.customizations.length > 0) {
+        console.log(`  🎨 Item "${item.name}" has customizations:`, item.customizations);
+      }
+    });
+
     return items;
   }, []);
 
@@ -468,10 +711,19 @@ export function useRealtimeVoice({
         console.log("✅✅✅ AGENT CONFIRMED ORDER COMPLETE - Showing order summary NOW!");
         const items = currentOrderRef.current;
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        
+
+        // DEBUG: Log items being sent to order complete with customizations
+        console.log("📦 Items being sent to OrderDisplayScreen:");
+        items.forEach((item, idx) => {
+          console.log(`  [${idx}] ${item.name} x${item.quantity}`,
+            item.customizations && item.customizations.length > 0
+              ? `✨ customizations: [${item.customizations.join(', ')}]`
+              : '(no customizations)');
+        });
+
         shouldResetOrder = true;
         console.log("🔄 Set shouldResetOrder flag for next customer");
-        
+
         // Call onOrderComplete to transition to display screen
         onOrderComplete({ items, total, language });
       }
@@ -479,72 +731,95 @@ export function useRealtimeVoice({
 
     // Parse order from agent messages (AFTER order completion check)
     if (speaker === 'agent') {
-      console.log("🛒 Parsing order from agent message...");
-      
+      console.log("🛒🛒🛒 PARSING ORDER FROM AGENT MESSAGE...");
+      console.log("📝 Full agent message:", cleanText);
+
       // 🔥 PRIORITY 1: Try to parse STRUCTURED FORMAT first (most reliable)
       const structuredItems = parseStructuredOrder(cleanText);
-      
-      if (structuredItems !== null) {
+
+      if (structuredItems !== null && structuredItems.length > 0) {
         console.log("🎯✅ STRUCTURED ORDER DETECTED - Using as single source of truth");
-        console.log("🔄 REPLACING entire order with structured items:", structuredItems.map(i => `${i.name} x${i.quantity}`));
-        
+        console.log("🔄 REPLACING entire order with structured items:", structuredItems.map(i => {
+          const customText = i.customizations && i.customizations.length > 0 ? ` [${i.customizations.join(', ')}]` : '';
+          return `${i.name} x${i.quantity}${customText}`;
+        }));
+
         currentOrderRef.current = structuredItems.map(item => ({...item}));
-        
+
+        // Debug: Verify customizations are in the ref
+        console.log("🔍 Verifying currentOrderRef.current:");
+        currentOrderRef.current.forEach((item, idx) => {
+          console.log(`  [${idx}] ${item.name} x${item.quantity}`, item.customizations ? `- customizations: ${JSON.stringify(item.customizations)}` : '- no customizations');
+        });
+
         if (onItemsUpdate) {
+          console.log("📤 Calling onItemsUpdate with", currentOrderRef.current.length, "items");
           onItemsUpdate([...currentOrderRef.current]);
         }
-        
+
         return;
       }
-      
-      // 🔥 FALLBACK: Old deletion logic (only if no structured format found)
-      const hasDeletionKeyword = /حذف|شلنا|عدلنا|أشيل|شيل|احذف|هنشيل|removed|remove|delete|cancel|تم حذف|حذفت/i.test(cleanText);
-      
-      if (hasDeletionKeyword) {
-        console.log("🗑️💥 DELETION DETECTED - Extracting what REMAINS in order");
-        
-        const parsedItems = parseOrderFromTranscript(cleanText);
-        
-        if (parsedItems.length >= 0) {
-          console.log("✅ Extracted REMAINING order items:", parsedItems.map(i => `${i.name} x${i.quantity}`));
-          console.log("🔄 REPLACING entire order with remaining items");
-          
-          currentOrderRef.current = parsedItems.map(item => ({...item}));
-          lastDeletionTime = Date.now();
-          
+
+      // 🔥 SAFETY NET: Even if structured format was found but returned empty,
+      // try aggressive full-text parsing to find ALL items mentioned
+      if (structuredItems === null || structuredItems.length === 0) {
+        console.log("⚠️ No structured items found or empty - trying AGGRESSIVE full-text parsing");
+
+        // Parse the ENTIRE message for any item mentions
+        const aggressiveItems = parseOrderFromTranscript(cleanText);
+
+        if (aggressiveItems.length > 0) {
+          console.log("🎯 AGGRESSIVE PARSING found items:", aggressiveItems.map(i => `${i.name} x${i.quantity}`));
+
+          // If this looks like a complete order statement, replace everything
+          const isOrderStatement = /طلبك|order|عندك|صار/i.test(cleanText);
+
+          if (isOrderStatement) {
+            console.log("🔄 Detected order statement - REPLACING entire order");
+            currentOrderRef.current = aggressiveItems.map(item => ({...item}));
+          } else {
+            console.log("➕ Adding/updating items from aggressive parse");
+            // Add or update items
+            aggressiveItems.forEach(parsedItem => {
+              const existingItem = currentOrderRef.current.find(item => item.name === parsedItem.name);
+              if (existingItem) {
+                existingItem.quantity = parsedItem.quantity;
+                console.log(`  🔄 Updated ${parsedItem.name} to quantity: ${parsedItem.quantity}`);
+              } else {
+                currentOrderRef.current.push(parsedItem);
+                console.log(`  ➕ Added new item: ${parsedItem.name} x${parsedItem.quantity}`);
+              }
+            });
+          }
+
           if (onItemsUpdate) {
             onItemsUpdate([...currentOrderRef.current]);
           }
-          
+
           return;
         }
       }
-      
-      // Normal parsing (no deletion)
-      const parsedItems = parseOrderFromTranscript(cleanText);
-      
-      if (parsedItems.length > 0) {
-        console.log("✅ Parsed items from agent:", parsedItems);
-        
-        const hasConfirmationPhrase = /الآن|صار|عندنا|عندي|طلبك|حالياً|فقط|current|order|now|only/i.test(cleanText);
-        
-        if (hasConfirmationPhrase && currentOrderRef.current.length > 0) {
-          console.log("🔄 Confirmation detected - REPLACING entire order");
+
+      // 🔥 FALLBACK 2: Deletion handling
+      const hasDeletionKeyword = /حذف|شلنا|عدلنا|أشيل|شيل|احذف|هنشيل|removed|remove|delete|cancel|تم حذف|حذفت/i.test(cleanText);
+
+      if (hasDeletionKeyword) {
+        console.log("🗑️💥 DELETION DETECTED - Extracting what REMAINS in order");
+
+        const parsedItems = parseOrderFromTranscript(cleanText);
+
+        if (parsedItems.length >= 0) {
+          console.log("✅ Extracted REMAINING order items:", parsedItems.map(i => `${i.name} x${i.quantity}`));
+          console.log("🔄 REPLACING entire order with remaining items");
+
           currentOrderRef.current = parsedItems.map(item => ({...item}));
-          if (onItemsUpdate) onItemsUpdate([...currentOrderRef.current]);
-        } else {
-          parsedItems.forEach(parsedItem => {
-            const existingItem = currentOrderRef.current.find(item => item.name === parsedItem.name);
-            if (existingItem) {
-              existingItem.quantity = parsedItem.quantity;
-              console.log(`🔄 Updated quantity for ${parsedItem.name}: ${parsedItem.quantity}`);
-            } else {
-              currentOrderRef.current.push(parsedItem);
-              console.log(`➕ Added new item: ${parsedItem.name} x${parsedItem.quantity}`);
-            }
-          });
-          
-          if (onItemsUpdate) onItemsUpdate([...currentOrderRef.current]);
+          lastDeletionTime = Date.now();
+
+          if (onItemsUpdate) {
+            onItemsUpdate([...currentOrderRef.current]);
+          }
+
+          return;
         }
       }
     }
