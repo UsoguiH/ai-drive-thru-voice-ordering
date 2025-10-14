@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
-// Hardcoded API key as requested
-const OPENAI_API_KEY = "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";
-
 export async function GET() {
   try {
+    // API key should be configured in environment variables
+    const OPENAI_API_KEY = "";
+
     // Use the REST API endpoint to generate ephemeral client secret
     const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
       method: "POST",

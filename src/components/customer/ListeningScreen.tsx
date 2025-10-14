@@ -50,6 +50,11 @@ export default function ListeningScreen({
       setTranscript((prev) => prev + text);
     },
     onItemsUpdate: (items) => {
+      console.log("📥 ListeningScreen received items update:", items.map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        customizations: i.customizations
+      })));
       setCurrentItems(items);
     },
     onConversationUpdate: (messages) => {
@@ -252,13 +257,13 @@ export default function ListeningScreen({
                       <motion.div
                         key={`${item.name}-${index}`}
                         initial={{ opacity: 0, x: 50, scale: 0.8 }}
-                        animate={{ 
-                          opacity: 1, 
-                          x: 0, 
+                        animate={{
+                          opacity: 1,
+                          x: 0,
                           scale: 1,
                           transition: { type: "spring", stiffness: 300, damping: 25 }
                         }}
-                        exit={{ 
+                        exit={{
                           opacity: 0,
                           x: language === "ar" ? 100 : -100,
                           scale: 0.8,
@@ -271,12 +276,18 @@ export default function ListeningScreen({
                           <span className="text-white text-xl font-semibold block">
                             {item.quantity}x {language === "ar" && item.nameAr ? item.nameAr : item.name}
                           </span>
+                          {/* Show customizations if any */}
+                          {item.customizations && item.customizations.length > 0 && (
+                            <span className="text-blue-300 text-xs block mt-1 italic">
+                              {item.customizations.join(", ")}
+                            </span>
+                          )}
                           <span className="text-gray-300 text-sm price">
                             {(item.price * item.quantity).toFixed(2)}
                             <SARSymbol />
                           </span>
                         </div>
-                        
+
                         {/* Delete Button */}
                         <motion.button
                           onClick={() => handleRemoveItem(item.name)}

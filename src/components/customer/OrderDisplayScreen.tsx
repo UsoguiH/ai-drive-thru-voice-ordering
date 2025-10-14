@@ -41,6 +41,17 @@ export default function OrderDisplayScreen({
 }: OrderDisplayScreenProps) {
   const [countdown, setCountdown] = useState(13);
 
+  // DEBUG: Log order items received with customizations
+  useEffect(() => {
+    console.log("🖼️ OrderDisplayScreen received order with", order.items.length, "items:");
+    order.items.forEach((item, idx) => {
+      console.log(`  [${idx}] ${item.name} x${item.quantity}`,
+        item.customizations && item.customizations.length > 0
+          ? `✨ customizations: [${item.customizations.join(', ')}]`
+          : '(no customizations)');
+    });
+  }, [order]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -140,6 +151,12 @@ export default function OrderDisplayScreen({
                   <div className="text-lg text-gray-400">
                     {t.quantity}: {item.quantity}
                   </div>
+                  {/* Show customizations if any */}
+                  {item.customizations && item.customizations.length > 0 && (
+                    <div className="text-sm text-blue-300 mt-1 italic">
+                      {item.customizations.join(", ")}
+                    </div>
+                  )}
                 </div>
                 <div className="text-3xl font-bold text-white price">
                   {(item.price * item.quantity).toFixed(2)}
@@ -249,35 +266,7 @@ export default function OrderDisplayScreen({
           </div>
         </motion.div>
 
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="flex flex-col md:flex-row gap-4 justify-center"
-        >
-          <button
-            onClick={onConfirm}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-2xl font-semibold px-12 py-6 rounded-2xl transition-all transform hover:scale-105 shadow-lg"
-          >
-            <Check className="w-8 h-8" />
-            {t.confirm}
-          </button>
-          <button
-            onClick={onEdit}
-            className="flex items-center justify-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white text-2xl font-semibold px-12 py-6 rounded-2xl transition-all transform hover:scale-105"
-          >
-            <Edit className="w-8 h-8" />
-            {t.edit}
-          </button>
-          <button
-            onClick={onCancel}
-            className="flex items-center justify-center gap-3 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-xl border border-red-500/50 text-red-400 text-2xl font-semibold px-12 py-6 rounded-2xl transition-all transform hover:scale-105"
-          >
-            <X className="w-8 h-8" />
-            {t.cancel}
-          </button>
-        </motion.div>
+        {/* Action Buttons - REMOVED per user request */}
       </div>
     </div>
   );
