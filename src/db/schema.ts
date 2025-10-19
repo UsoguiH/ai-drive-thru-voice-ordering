@@ -5,6 +5,13 @@ export const orders = sqliteTable('orders', {
   items: text('items', { mode: 'json' }).notNull(),
   total: real('total').notNull(),
   status: text('status').notNull().default('pending'),
+  // Enhanced status tracking for kitchen display system
+  orderNumber: integer('order_number').notNull(),
+  estimatedTime: integer('estimated_time'), // in minutes
+  startedAt: text('started_at'),
+  completedAt: text('completed_at'),
+  kitchenNote: text('kitchen_note'),
+  priority: integer('priority').notNull().default(1), // 1=normal, 2=high, 3=urgent
   language: text('language').notNull(),
   customerNote: text('customer_note'),
   createdAt: text('created_at').notNull(),

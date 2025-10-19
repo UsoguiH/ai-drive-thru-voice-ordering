@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     // API key should be configured in environment variables
-    const OPENAI_API_KEY = "";
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+    if (!OPENAI_API_KEY) {
+      throw new Error("OpenAI API key is not configured");
+    }
 
     // Use the REST API endpoint to generate ephemeral client secret
     const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {

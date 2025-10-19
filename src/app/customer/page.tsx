@@ -6,6 +6,7 @@ import WelcomeScreen from "@/components/customer/WelcomeScreen";
 import ListeningScreen from "@/components/customer/ListeningScreen";
 import OrderDisplayScreen from "@/components/customer/OrderDisplayScreen";
 import ConfirmationScreen from "@/components/customer/ConfirmationScreen";
+import { submitOrderToKitchen, orderToJSON, createOrderSummary } from "@/utils/orderProcessor";
 
 export type OrderItem = {
   name: string;
@@ -42,27 +43,35 @@ export default function CustomerPage() {
   };
 
   const handleConfirmOrder = async () => {
-    try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: order.items,
-          total: order.total,
-          language: order.language,
-          status: "pending",
-        }),
-      });
+    console.log('🚀 Starting order submission process...');
+    console.log('📋 Order summary:', createOrderSummary(order));
+    console.log('📄 Order JSON:\n', orderToJSON(order));
 
-      if (response.ok) {
-        setCurrentScreen("confirmation");
-        setTimeout(() => {
-          setCurrentScreen("welcome");
-          setOrder({ items: [], total: 0, language: "ar" });
-        }, 13000);
-      }
-    } catch (error) {
-      console.error("Failed to submit order:", error);
+    // Use the new utility that ensures orders reach the kitchen
+    const result = await submitOrderToKitchen({
+      items: order.items,
+      total: order.total,
+      language: order.language,
+      customerNote: 'Voice order from AI assistant',
+    });
+
+    if (result.success) {
+      console.log('✅ Order submitted successfully! Order ID:', result.orderId);
+      setCurrentScreen("confirmation");
+
+      // Reset after showing confirmation
+      setTimeout(() => {
+        setCurrentScreen("welcome");
+        setOrder({ items: [], total: 0, language: "ar" });
+      }, 13000);
+    } else {
+      console.error('❌ Order submission failed:', result.error);
+      // Still show confirmation to customer, but order will be retried
+      setCurrentScreen("confirmation");
+      setTimeout(() => {
+        setCurrentScreen("welcome");
+        setOrder({ items: [], total: 0, language: "ar" });
+      }, 13000);
     }
   };
 

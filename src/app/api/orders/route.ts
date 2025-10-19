@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { items, total, language, customerNote, status } = body;
+    const { items, total, language, customerNote, status, priority, estimatedTime } = body;
 
     // Validate required fields
     if (!items) {
@@ -102,15 +102,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate status if provided
-    const validStatuses = ['pending', 'preparing', 'completed'];
+    const validStatuses = ['pending', 'in_progress', 'ready', 'completed'];
     const orderStatus = status || 'pending';
 
     if (!validStatuses.includes(orderStatus)) {
       return NextResponse.json(
         {
-          error: 'Status must be one of: pending, preparing, completed',
+          error: 'Status must be one of: pending, in_progress, ready, completed',
           code: 'INVALID_STATUS',
         },
+        { status: 400 }
+      );
+    }
+
+    // Validate priority if provided
+    const validPriorities = [1, 2, 3]; // normal, high, urgent
+    const orderPriority = priority && validPriorities.includes(priority) ? priority : 1;
+
+    // Validate estimated time if provided
+    if (estimatedTime !== undefined && (typeof estimatedTime !== 'number' || estimatedTime < 0)) {
+      return NextResponse.json(
+        { error: 'Estimated time must be a positive number', code: 'INVALID_ESTIMATED_TIME' },
         { status: 400 }
       );
     }
@@ -142,12 +154,18 @@ export async function POST(request: NextRequest) {
 
     const timestamp = new Date().toISOString();
 
+    // Generate order number
+    const orderNumber = await generateOrderNumber();
+
     const newOrder = await db
       .insert(orders)
       .values({
         items: JSON.stringify(items),
         total,
         status: orderStatus,
+        orderNumber,
+        priority: orderPriority,
+        estimatedTime: estimatedTime || null,
         language,
         customerNote: customerNote?.trim() || null,
         createdAt: timestamp,
@@ -162,5 +180,22 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error: ' + error },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to generate order number
+async function generateOrderNumber(): Promise<number> {
+  try {
+    // Get the highest order number and increment by 1
+    const result = await db
+      .select({ orderNumber: orders.orderNumber })
+      .from(orders)
+      .orderBy(desc(orders.orderNumber))
+      .limit(1);
+
+    return result.length > 0 ? result[0].orderNumber + 1 : 1001; // Start from 1001
+  } catch (error) {
+    console.error('Error generating order number:', error);
+    return Date.now() % 10000 + 1000; // Fallback to timestamp-based number
   }
 }

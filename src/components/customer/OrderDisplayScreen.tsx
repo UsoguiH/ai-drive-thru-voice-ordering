@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, Edit, X, ShoppingBag } from "lucide-react";
 import type { OrderState } from "@/app/customer/page";
+import { submitOrderToKitchen, orderToJSON, createOrderSummary } from "@/utils/orderProcessor";
 
 type OrderDisplayScreenProps = {
   order: OrderState;
@@ -40,6 +41,8 @@ export default function OrderDisplayScreen({
   onCancel,
 }: OrderDisplayScreenProps) {
   const [countdown, setCountdown] = useState(13);
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [orderId, setOrderId] = useState<number | null>(null);
 
   // DEBUG: Log order items received with customizations
   useEffect(() => {
@@ -50,6 +53,40 @@ export default function OrderDisplayScreen({
           ? `✨ customizations: [${item.customizations.join(', ')}]`
           : '(no customizations)');
     });
+  }, [order]);
+
+  // Automatically submit order to kitchen when displayed
+  useEffect(() => {
+    const submitOrder = async () => {
+      if (order.items.length > 0) {
+        console.log('🚀 Auto-submitting order to kitchen...');
+        console.log('📋 Order summary:', createOrderSummary(order));
+        console.log('📄 Order JSON:\n', orderToJSON(order));
+
+        try {
+          const result = await submitOrderToKitchen({
+            items: order.items,
+            total: order.total,
+            language: order.language,
+            customerNote: 'Voice order from AI assistant',
+          });
+
+          if (result.success) {
+            console.log('✅ Order submitted successfully! Order ID:', result.orderId);
+            setOrderSubmitted(true);
+            setOrderId(result.orderId || null);
+          } else {
+            console.error('❌ Order submission failed:', result.error);
+            setOrderSubmitted(false);
+          }
+        } catch (error) {
+          console.error('❌ Error submitting order:', error);
+        }
+      }
+    };
+
+    // Submit order immediately when component mounts
+    submitOrder();
   }, [order]);
 
   useEffect(() => {
@@ -196,6 +233,23 @@ export default function OrderDisplayScreen({
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Order Submission Status */}
+        {orderSubmitted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex justify-center mb-6"
+          >
+            <div className="bg-green-500/20 border border-green-500/50 rounded-2xl px-6 py-3 flex items-center gap-3">
+              <Check className="w-6 h-6 text-green-400" />
+              <div className="text-green-400 text-lg font-semibold">
+                {order.language === "ar" ? `تم إرسال الطلب #${orderId}` : `Order #${orderId} Sent to Kitchen`}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Timer - MOVED HERE under order summary */}
         <motion.div
