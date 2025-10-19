@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, X, AlertCircle, MessageSquare, ShoppingCart } from "lucide-react";
-import VoiceVisualizer from "@/components/customer/VoiceVisualizer";
+import LiveWaveform from "@/components/customer/LiveWaveform";
 import { useRealtimeVoice, type ConversationMessage } from "@/hooks/useRealtimeVoice";
 import type { OrderState, OrderItem } from "@/app/customer/page";
 
@@ -42,6 +42,31 @@ export default function ListeningScreen({
   const [transcript, setTranscript] = useState("");
   const [currentItems, setCurrentItems] = useState<OrderItem[]>([]);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
+  const [micPermissionGranted, setMicPermissionGranted] = useState(false);
+
+  // Request microphone permission immediately on mount
+  useEffect(() => {
+    const requestMicPermission = async () => {
+      try {
+        // Check if permission is already granted
+        const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        if (permissionStatus.state === 'granted') {
+          setMicPermissionGranted(true);
+          return;
+        }
+
+        // If not granted, try to get permission
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop()); // Stop immediately after getting permission
+        setMicPermissionGranted(true);
+      } catch (error) {
+        console.error("Microphone permission denied:", error);
+        setMicPermissionGranted(false);
+      }
+    };
+
+    requestMicPermission();
+  }, []);
 
   const { isConnected, isListening, error, disconnect, removeItem } = useRealtimeVoice({
     language,
@@ -186,7 +211,16 @@ export default function ListeningScreen({
 
         {/* Voice Visualizer */}
         <div className="mb-8">
-          <VoiceVisualizer isActive={isListening && isConnected} />
+          <LiveWaveform
+            active={micPermissionGranted} // Activate immediately after mic permission
+            processing={!isConnected && micPermissionGranted} // Show processing while connecting
+            mode="static"
+            sensitivity={1.3}
+            barColor="#1eff00"
+            height={200}
+            className="w-full"
+            onError={(error) => console.error("Waveform error:", error)}
+          />
         </div>
 
         {/* MAIN ORDER DISPLAY BOX - LARGE AND PROMINENT */}
