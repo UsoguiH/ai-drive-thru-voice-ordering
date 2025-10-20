@@ -104,16 +104,6 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-600/0 group-hover:from-blue-500/10 group-hover:to-blue-600/10 transition-all duration-300" />
           </motion.button>
         </motion.div>
-
-        {/* Bottom hint */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="mt-16 text-gray-500 text-xl"
-        >
-          مدعوم بتقنية التعرف على الصوت بالذكاء الاصطناعي
-        </motion.p>
       </div>
     </div>
   );

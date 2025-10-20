@@ -137,5 +137,5 @@ export function createOrderSummary(orderData: OrderData): string {
     return `${item.quantity}x ${item.name}${customText}`;
   }).join(', ');
 
-  return `${itemNames} - Total: $${orderData.total.toFixed(2)}`;
+  return `${itemNames} - Total: ${orderData.total.toFixed(2)} ريال`;
 }

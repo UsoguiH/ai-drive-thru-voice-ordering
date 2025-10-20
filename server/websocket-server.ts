@@ -1,10 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import { createClient } from '@libsql/client';
+import Database from 'better-sqlite3';
 
-const db = createClient({
-  url: process.env.TURSO_CONNECTION_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+// Use local SQLite database
+const db = new Database('ai-drive-thru.db');
 
 const wss = new WebSocketServer({
   port: parseInt(process.env.WS_PORT || '8080'),

@@ -8,11 +8,11 @@ async function main() {
     const sampleOrders = [
         {
             items: [
-                { name: 'Cheeseburger', quantity: 2, price: 7.99 },
-                { name: 'Large Fries', quantity: 1, price: 4.99 },
-                { name: 'Coca Cola', quantity: 2, price: 2.99 }
+                { name: 'Cheeseburger', quantity: 2, price: 18.00 },
+                { name: 'Large Fries', quantity: 1, price: 12.00 },
+                { name: 'Coca Cola', quantity: 2, price: 7.00 }
             ],
-            total: 26.95,
+            total: 62.00,
             status: 'pending',
             language: 'en',
             customerNote: 'Extra ketchup please',
@@ -21,11 +21,11 @@ async function main() {
         },
         {
             items: [
-                { name: 'Double Burger', quantity: 1, price: 9.99 },
-                { name: 'Medium Fries', quantity: 1, price: 3.99 },
-                { name: 'Orange Juice', quantity: 1, price: 3.49 }
+                { name: 'Double Burger', quantity: 1, price: 22.00 },
+                { name: 'Medium Fries', quantity: 1, price: 10.00 },
+                { name: 'Orange Juice', quantity: 1, price: 9.00 }
             ],
-            total: 17.47,
+            total: 41.00,
             status: 'preparing',
             language: 'ar',
             customerNote: null,
@@ -34,12 +34,12 @@ async function main() {
         },
         {
             items: [
-                { name: 'Chicken Burger', quantity: 1, price: 8.49 },
-                { name: 'Small Fries', quantity: 1, price: 2.49 },
-                { name: 'Coffee', quantity: 1, price: 2.99 },
-                { name: 'Apple Pie', quantity: 1, price: 2.49 }
+                { name: 'Chicken Burger', quantity: 1, price: 20.00 },
+                { name: 'Small Fries', quantity: 1, price: 8.00 },
+                { name: 'Coffee', quantity: 1, price: 8.00 },
+                { name: 'Apple Pie', quantity: 1, price: 10.00 }
             ],
-            total: 16.46,
+            total: 46.00,
             status: 'completed',
             language: 'en',
             customerNote: 'No onions please',
@@ -48,11 +48,11 @@ async function main() {
         },
         {
             items: [
-                { name: 'Veggie Burger', quantity: 1, price: 7.49 },
-                { name: 'Large Fries', quantity: 1, price: 4.99 },
-                { name: 'Water', quantity: 2, price: 1.99 }
+                { name: 'Veggie Burger', quantity: 1, price: 16.00 },
+                { name: 'Large Fries', quantity: 1, price: 12.00 },
+                { name: 'Water', quantity: 2, price: 4.00 }
             ],
-            total: 16.46,
+            total: 36.00,
             status: 'pending',
             language: 'en',
             customerNote: 'Make it spicy',
@@ -61,12 +61,12 @@ async function main() {
         },
         {
             items: [
-                { name: 'Double Burger', quantity: 2, price: 9.99 },
-                { name: 'Medium Fries', quantity: 2, price: 3.99 },
-                { name: 'Pepsi', quantity: 2, price: 2.99 },
-                { name: 'Ice Cream', quantity: 2, price: 2.49 }
+                { name: 'Double Burger', quantity: 2, price: 22.00 },
+                { name: 'Medium Fries', quantity: 2, price: 10.00 },
+                { name: 'Pepsi', quantity: 2, price: 7.00 },
+                { name: 'Ice Cream', quantity: 2, price: 8.00 }
             ],
-            total: 38.94,
+            total: 94.00,
             status: 'preparing',
             language: 'ar',
             customerNote: 'Extra sauce',

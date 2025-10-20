@@ -19,16 +19,16 @@ type UseRealtimeVoiceProps = {
 };
 
 const MENU_ITEMS = [
-  { name: "Cheeseburger", nameAr: "برجر الجبن", price: 7.99 },
-  { name: "Chicken Burger", nameAr: "برجر دجاج", price: 8.49 },
-  { name: "Veggie Burger", nameAr: "برجر نباتي", price: 7.49 },
-  { name: "Large Fries", nameAr: "بطاطس كبيرة", price: 4.99 },
-  { name: "Medium Fries", nameAr: "بطاطس وسط", price: 3.99 },
-  { name: "Small Fries", nameAr: "بطاطس صغيرة", price: 2.99 },
-  { name: "Coca Cola", nameAr: "كوكاكولا", price: 2.99 },
-  { name: "Sprite", nameAr: "سبرايت", price: 2.99 },
-  { name: "Orange Juice", nameAr: "عصير برتقال", price: 3.49 },
-  { name: "Water", nameAr: "ماء", price: 1.99 },
+  { name: "Cheeseburger", nameAr: "برجر الجبن", price: 18.00 },
+  { name: "Chicken Burger", nameAr: "برجر دجاج", price: 20.00 },
+  { name: "Veggie Burger", nameAr: "برجر نباتي", price: 16.00 },
+  { name: "Large Fries", nameAr: "بطاطس كبيرة", price: 12.00 },
+  { name: "Medium Fries", nameAr: "بطاطس وسط", price: 10.00 },
+  { name: "Small Fries", nameAr: "بطاطس صغيرة", price: 8.00 },
+  { name: "Coca Cola", nameAr: "كوكاكولا", price: 7.00 },
+  { name: "Sprite", nameAr: "سبرايت", price: 7.00 },
+  { name: "Orange Juice", nameAr: "عصير برتقال", price: 9.00 },
+  { name: "Water", nameAr: "ماء", price: 4.00 },
 ];
 
 // GLOBAL SINGLETON
