@@ -387,11 +387,16 @@ const LiveWaveform: React.FC<LiveWaveformProps> = ({
         for (let i = 0; i < dataToRender.length; i++) {
           const value = dataToRender[i] || 0;
           const x = i * step + (step - barWidth) / 2;
-          const barHeight = Math.max(barRadius * 2, value * rect.height * 0.9);
+
+          // Show tiny dots during silence, scale up with sound
+          const minDotHeight = 4; // Very small dots for silence (4px)
+          const maxBarHeight = rect.height * 0.9;
+          const barHeight = minDotHeight + (value * (maxBarHeight - minDotHeight));
           const y = centerY - barHeight / 2;
 
           ctx.fillStyle = computedBarColor;
-          ctx.globalAlpha = 0.4 + value * 0.6;
+          // Adjust opacity: more visible during sound, subtle during silence
+          ctx.globalAlpha = 0.2 + (value * 0.8);
           ctx.beginPath();
           ctx.roundRect(x, y, barWidth, barHeight, barRadius);
           ctx.fill();
@@ -412,11 +417,16 @@ const LiveWaveform: React.FC<LiveWaveformProps> = ({
           const value = dataToRender[dataIndex] || 0;
           // Apply the offset to the x position for a smooth slide effect
           const x = rect.width - (i * step) - barWidth - (step - barWidth) / 2 + offset;
-          const barHeight = Math.max(barRadius * 2, value * rect.height * 0.9);
+
+          // Show tiny dots during silence, scale up with sound
+          const minDotHeight = 4; // Very small dots for silence (4px)
+          const maxBarHeight = rect.height * 0.9;
+          const barHeight = minDotHeight + (value * (maxBarHeight - minDotHeight));
           const y = centerY - barHeight / 2;
 
           ctx.fillStyle = computedBarColor;
-          ctx.globalAlpha = 0.4 + value * 0.6;
+          // Adjust opacity: more visible during sound, subtle during silence
+          ctx.globalAlpha = 0.2 + (value * 0.8);
 
           ctx.beginPath();
           ctx.roundRect(x, y, barWidth, barHeight, barRadius);

@@ -215,7 +215,7 @@ export function OrderCard({ order, language, onStatusChange }: OrderCardProps) {
                 )}
               </div>
               <div className="text-gray-900 font-medium">
-                ${(item.price * item.quantity).toFixed(2)}
+                {(item.price * item.quantity).toFixed(2)} ريال
               </div>
             </motion.div>
           ))}
@@ -291,7 +291,7 @@ export function OrderCard({ order, language, onStatusChange }: OrderCardProps) {
           transition={{ delay: 0.2 }}
         >
           <div className="text-lg font-bold text-gray-900">
-            ${order.total.toFixed(2)}
+            {order.total.toFixed(2)} ريال
           </div>
           {order.status !== 'completed' && (
             <motion.div

@@ -64,16 +64,6 @@ export default function Home() {
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-600/0 group-hover:from-blue-500/5 group-hover:to-purple-600/5 transition-all duration-300" />
         </motion.button>
-
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center mt-16 text-gray-500 text-sm"
-        >
-          <p>مدعوم بواسطة OpenAI Realtime API • دعم ثنائي اللغة (عربي/إنجليزي)</p>
-        </motion.div>
       </div>
     </div>
   );

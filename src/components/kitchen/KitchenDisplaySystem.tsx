@@ -72,7 +72,7 @@ const reverseStatusMapping = {
   completed: 'completed',
 };
 
-export function KitchenDisplaySystem() {
+export function KitchenDisplaySystem({ language }: { language: Language }) {
   const {
     orders,
     loading,
@@ -81,7 +81,6 @@ export function KitchenDisplaySystem() {
     updateOrderStatus
   } = useKitchenOrders();
 
-  const [language, setLanguage] = useState<Language>('ar');
   const [activeTab, setActiveTab] = useState('all');
 
   const t = translations[language];
@@ -134,63 +133,7 @@ export function KitchenDisplaySystem() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Header */}
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="bg-white/90 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-50 shadow-sm"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div
-              className="flex items-center gap-3"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-            >
-              <motion.div
-                className="bg-gray-900 p-2.5 rounded-2xl"
-                whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ChefHat className="w-6 h-6 text-white" />
-              </motion.div>
-              <div>
-                <h1 className="text-gray-900">{t.title}</h1>
-                <p className="text-sm text-gray-500">{t.subtitle}</p>
-              </div>
-            </motion.div>
-            <motion.div
-              className="flex items-center gap-3"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.3 }}
-            >
-              <Button
-                onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
-                variant="outline"
-                size="sm"
-                className="gap-2 border-gray-200 hover:bg-gray-50"
-              >
-                <Languages className="w-4 h-4" />
-                <span>{language === 'ar' ? 'EN' : 'AR'}</span>
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="text-sm text-gray-500">
-                  {t.liveUpdates}
-                </div>
-                <motion.div
-                  className="w-2 h-2 bg-green-500 rounded-full"
-                  animate={{ scale: [1, 1.2, 1], opacity: [1, 0.6, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.header>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800" dir={isRTL ? 'rtl' : 'ltr'}>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Stats Cards */}
@@ -273,7 +216,7 @@ export function KitchenDisplaySystem() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <div className="bg-white/90 backdrop-blur-xl border border-gray-200/50 p-1 mb-6 rounded-xl shadow-lg">
+          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 p-1 mb-6 rounded-xl shadow-lg">
             <div className="flex space-x-1">
               {[
                 { id: 'all', label: t.allActive },
@@ -286,8 +229,8 @@ export function KitchenDisplaySystem() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   {tab.id === 'new' && (
@@ -343,8 +286,8 @@ export function KitchenDisplaySystem() {
                 >
                   <CheckCircle className="w-10 h-10 text-gray-400" />
                 </motion.div>
-                <h3 className="text-gray-900 mb-2">{t.noOrdersTitle}</h3>
-                <p className="text-gray-500">{t.noOrdersDesc}</p>
+                <h3 className="text-gray-900 dark:text-white mb-2">{t.noOrdersTitle}</h3>
+                <p className="text-gray-500 dark:text-gray-400">{t.noOrdersDesc}</p>
               </motion.div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

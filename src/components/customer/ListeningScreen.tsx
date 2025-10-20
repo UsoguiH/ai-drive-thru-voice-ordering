@@ -210,17 +210,19 @@ export default function ListeningScreen({
         </motion.p>
 
         {/* Voice Visualizer */}
-        <div className="mb-8">
-          <LiveWaveform
-            active={micPermissionGranted} // Activate immediately after mic permission
-            processing={!isConnected && micPermissionGranted} // Show processing while connecting
-            mode="static"
-            sensitivity={1.3}
-            barColor="#1eff00"
-            height={200}
-            className="w-full"
-            onError={(error) => console.error("Waveform error:", error)}
-          />
+        <div className="mb-8 flex justify-center">
+          <div className="w-full max-w-2xl">
+            <LiveWaveform
+              active={micPermissionGranted} // Activate immediately after mic permission
+              processing={!isConnected && micPermissionGranted} // Show processing while connecting
+              mode="static"
+              sensitivity={1.3}
+              barColor="#1eff00"
+              height={300}
+              className="w-full"
+              onError={(error) => console.error("Waveform error:", error)}
+            />
+          </div>
         </div>
 
         {/* MAIN ORDER DISPLAY BOX - LARGE AND PROMINENT */}
