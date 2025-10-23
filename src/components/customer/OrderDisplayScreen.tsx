@@ -40,7 +40,6 @@ export default function OrderDisplayScreen({
   onEdit,
   onCancel,
 }: OrderDisplayScreenProps) {
-  const [countdown, setCountdown] = useState(13);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
 
@@ -55,54 +54,41 @@ export default function OrderDisplayScreen({
     });
   }, [order]);
 
-  // Automatically submit order to kitchen when displayed
-  useEffect(() => {
-    const submitOrder = async () => {
-      if (order.items.length > 0) {
-        console.log('🚀 Auto-submitting order to kitchen...');
-        console.log('📋 Order summary:', createOrderSummary(order));
-        console.log('📄 Order JSON:\n', orderToJSON(order));
+  // Order submission only happens when user explicitly confirms, not automatically
 
-        try {
-          const result = await submitOrderToKitchen({
-            items: order.items,
-            total: order.total,
-            language: order.language,
-            customerNote: 'Voice order from AI assistant',
-          });
+  // Remove auto-timer - let user review order without pressure
 
-          if (result.success) {
-            console.log('✅ Order submitted successfully! Order ID:', result.orderId);
-            setOrderSubmitted(true);
-            setOrderId(result.orderId || null);
-          } else {
-            console.error('❌ Order submission failed:', result.error);
-            setOrderSubmitted(false);
-          }
-        } catch (error) {
-          console.error('❌ Error submitting order:', error);
+  const handleConfirmOrder = async () => {
+    if (order.items.length > 0 && !orderSubmitted) {
+      console.log('🚀 User confirmed order - submitting to kitchen...');
+      console.log('📋 Order summary:', createOrderSummary(order));
+      console.log('📄 Order JSON:\n', orderToJSON(order));
+
+      try {
+        const result = await submitOrderToKitchen({
+          items: order.items,
+          total: order.total,
+          language: order.language,
+          customerNote: 'Voice order from AI assistant',
+        });
+
+        if (result.success) {
+          console.log('✅ Order submitted successfully! Order ID:', result.orderId);
+          setOrderSubmitted(true);
+          setOrderId(result.orderId || null);
+          // After successful submission, proceed to confirmation screen
+          setTimeout(() => {
+            onConfirm();
+          }, 2000); // Brief pause to show success message
+        } else {
+          console.error('❌ Order submission failed:', result.error);
+          setOrderSubmitted(false);
         }
+      } catch (error) {
+        console.error('❌ Error submitting order:', error);
       }
-    };
-
-    // Submit order immediately when component mounts
-    submitOrder();
-  }, [order]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onCancel(); // Return to welcome screen
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [onCancel]);
+    }
+  };
 
   const text = {
     en: {
@@ -139,7 +125,6 @@ export default function OrderDisplayScreen({
   const isRTL = order.language === "ar";
   const tax = order.total * 0.1;
   const finalTotal = order.total + tax;
-  const progress = (countdown / 13) * 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 relative" dir={isRTL ? "rtl" : "ltr"}>
@@ -251,76 +236,67 @@ export default function OrderDisplayScreen({
           </motion.div>
         )}
 
-        {/* Timer - MOVED HERE under order summary */}
+        {/* Action Buttons */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex justify-center mb-8"
+          className="flex flex-col sm:flex-row gap-4 justify-center"
         >
-          <div className="inline-flex flex-col items-center">
-            {/* Circular Progress */}
-            <div className="relative">
-              {/* Background circle */}
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="54"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.1)"
-                  strokeWidth="4"
-                />
-                {/* Progress circle */}
-                <motion.circle
-                  cx="60"
-                  cy="60"
-                  r="54"
-                  fill="none"
-                  stroke="url(#gradient)"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeDasharray={339.292}
-                  strokeDashoffset={339.292 * (1 - progress / 100)}
-                  initial={{ strokeDashoffset: 0 }}
-                  animate={{ strokeDashoffset: 339.292 * (1 - progress / 100) }}
-                  transition={{ duration: 1, ease: "linear" }}
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#3b82f6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              
-              {/* Timer number in center */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <motion.div
-                  key={countdown}
-                  initial={{ scale: 1.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  className="text-6xl font-bold bg-gradient-to-br from-green-400 to-blue-400 bg-clip-text text-transparent"
-                >
-                  {countdown}
-                </motion.div>
-              </div>
+          {/* Edit Order Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onEdit}
+            disabled={orderSubmitted}
+            className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 ${
+              orderSubmitted
+                ? "bg-gray-500/20 border border-gray-500/50 text-gray-400 cursor-not-allowed"
+                : "bg-blue-500/20 border border-blue-500/50 text-blue-300 hover:bg-blue-500/30"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <Edit className="w-5 h-5" />
+              {t.edit}
             </div>
-            
-            {/* Timer label */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="text-lg text-gray-400 mt-4 font-medium"
-            >
-              {t.autoReturn}
-            </motion.p>
-          </div>
-        </motion.div>
+          </motion.button>
 
-        {/* Action Buttons - REMOVED per user request */}
+          {/* Confirm Order Button */}
+          <motion.button
+            whileHover={{ scale: !orderSubmitted ? 1.02 : 1 }}
+            whileTap={{ scale: !orderSubmitted ? 0.98 : 1 }}
+            onClick={handleConfirmOrder}
+            disabled={orderSubmitted}
+            className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 ${
+              orderSubmitted
+                ? "bg-gray-500/20 border border-gray-500/50 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/50 text-green-300 hover:from-green-500/30 hover:to-green-600/30"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <Check className="w-5 h-5" />
+              {orderSubmitted ? (order.language === "ar" ? "تم الإرسال" : "Sent") : t.confirm}
+            </div>
+          </motion.button>
+
+          {/* Cancel Order Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onCancel}
+            disabled={orderSubmitted}
+            className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 ${
+              orderSubmitted
+                ? "bg-gray-500/20 border border-gray-500/50 text-gray-400 cursor-not-allowed"
+                : "bg-red-500/20 border border-red-500/50 text-red-300 hover:bg-red-500/30"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <X className="w-5 h-5" />
+              {t.cancel}
+            </div>
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

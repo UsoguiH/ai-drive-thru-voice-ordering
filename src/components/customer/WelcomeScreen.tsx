@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mic, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 
 type WelcomeScreenProps = {
   onStart: (language: "en" | "ar") => void;
@@ -31,20 +31,6 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
       </div>
 
       <div className="relative z-10 max-w-4xl w-full text-center">
-        {/* Logo/Icon */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-12 inline-flex items-center justify-center"
-        >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-2xl opacity-50" />
-            <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 p-8 rounded-full shadow-2xl">
-              <Mic className="w-20 h-20 text-white" />
-            </div>
-          </div>
-        </motion.div>
 
         {/* Title */}
         <motion.h1

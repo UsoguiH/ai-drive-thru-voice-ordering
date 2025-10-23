@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Order, OrderStatus, OrderItem } from '@/hooks/useKitchenOrders';
 import { Clock, CheckCircle, ChefHat, AlertCircle, Edit3, Save, X } from 'lucide-react';
+import { SaudiRiyal } from '@/components/ui/SaudiRiyal';
 
 interface OrderCardProps {
   order: Order;
@@ -214,8 +215,9 @@ export function OrderCard({ order, language, onStatusChange }: OrderCardProps) {
                   </p>
                 )}
               </div>
-              <div className="text-gray-900 font-medium">
-                {(item.price * item.quantity).toFixed(2)} ريال
+              <div className="text-gray-900 font-medium flex items-center gap-1 flex-row-reverse">
+                {(item.price * item.quantity).toFixed(2)}
+                <SaudiRiyal size="sm" />
               </div>
             </motion.div>
           ))}
@@ -290,8 +292,9 @@ export function OrderCard({ order, language, onStatusChange }: OrderCardProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="text-lg font-bold text-gray-900">
-            {order.total.toFixed(2)} ريال
+          <div className="text-lg font-bold text-gray-900 flex items-center gap-2 flex-row-reverse">
+            {order.total.toFixed(2)}
+            <SaudiRiyal />
           </div>
           {order.status !== 'completed' && (
             <motion.div
