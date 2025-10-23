@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WelcomeScreen from "@/components/customer/WelcomeScreen";
-import ListeningScreen from "@/components/customer/ListeningScreen";
+import VoiceChatInterface from "@/components/customer/VoiceChatInterface";
 import OrderDisplayScreen from "@/components/customer/OrderDisplayScreen";
 import ConfirmationScreen from "@/components/customer/ConfirmationScreen";
 import { submitOrderToKitchen, orderToJSON, createOrderSummary } from "@/utils/orderProcessor";
@@ -107,7 +107,7 @@ export default function CustomerPage() {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.5 }}
           >
-            <ListeningScreen
+            <VoiceChatInterface
               language={order.language}
               onOrderComplete={handleOrderComplete}
               onCancel={handleCancelOrder}

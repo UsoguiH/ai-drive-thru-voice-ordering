@@ -688,6 +688,7 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
     }
 
     // 🔥 CRITICAL: Check for ORDER COMPLETION FIRST (before any parsing logic)
+    // Only trigger when CUSTOMER explicitly says they're finished, not AI confirmation questions
     const orderCompletePatterns = [
       /ORDER_COMPLETE/i,
       /order\s+(?:is\s+)?complete/i,
@@ -695,20 +696,27 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
       /طلبك\s+جاهز/i,
       /تم\s+الطلب/i,
       /الطلب\s+كامل/i,
-      /هل\s+(?:هذا|ده)\s+(?:كل\s+)?(?:شيء|حاجة)/i,
-      /(?:anything|something)\s+else/i,
-      /تحب\s+تضيف\s+(?:أي\s+)?(?:حاجة|شيء)\s+(?:تاني|ثاني)/i,
+      // Customer explicitly saying they're finished
+      /(?:that's|that is)\s+(?:it|all|everything)/i,
+      /(?:I'm|i am)\s+(?:done|finished)/i,
+      /(?:nothing|no)\s+(?:else)/i,
+      /(?:هذا|ده)\s+(?:كل|كلوش)\s+(?:حاجه|شيء)/i,
+      /(?:أنا)\s+(?:مخلص|مخلصش|عجزت|نزلت)/i,
+      /(?:مفيش|ما فيش)\s+(?:تاني|ثاني|حاجة|شيء)/i,
+      /(?:كده|كدا)\s+(?:كفاية|بس|يلا)/i,
+      /(?:خلاص|تمام|كله)\s+(?:بس)/i,
+      /(?:انهينا|خلصنا)\s+(?:الطلب)/i,
     ];
 
-    const isAskingForConfirmation = orderCompletePatterns.some(pattern => pattern.test(cleanText));
-    
-    if (speaker === 'agent' && isAskingForConfirmation && currentOrderRef.current.length > 0) {
+    const isCustomerFinished = orderCompletePatterns.some(pattern => pattern.test(cleanText));
+
+    if (speaker === 'customer' && isCustomerFinished && currentOrderRef.current.length > 0) {
       const timeSinceLastDeletion = Date.now() - lastDeletionTime;
       
       if (timeSinceLastDeletion < 3000) {
         console.log("🚫 Ignoring order completion - deletion happened", timeSinceLastDeletion, "ms ago");
       } else {
-        console.log("✅✅✅ AGENT CONFIRMED ORDER COMPLETE - Showing order summary NOW!");
+        console.log("✅✅✅ CUSTOMER SAID THEY'RE FINISHED - Showing order summary NOW!");
         const items = currentOrderRef.current;
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -824,24 +832,7 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
       }
     }
 
-    // CRITICAL FIX: Only complete order if no recent deletions
-    if (cleanText.includes("ORDER_COMPLETE")) {
-      const timeSinceLastDeletion = Date.now() - lastDeletionTime;
-      
-      if (timeSinceLastDeletion < 3000) {
-        console.log("🚫 Ignoring ORDER_COMPLETE - deletion happened", timeSinceLastDeletion, "ms ago");
-        return;
-      }
-      
-      console.log("✅ ORDER_COMPLETE detected - completing order");
-      const items = currentOrderRef.current;
-      const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      
-      shouldResetOrder = true;
-      console.log("🔄 Set shouldResetOrder flag for next customer");
-      
-      onOrderComplete({ items, total, language });
-    }
+    // ORDER_COMPLETE handling removed - using customer completion patterns above
   }, [language, onConversationUpdate, onItemsUpdate, onOrderComplete, parseOrderFromTranscript, parseStructuredOrder]);
 
   const updateConversationFromHistory = useCallback((session: any) => {

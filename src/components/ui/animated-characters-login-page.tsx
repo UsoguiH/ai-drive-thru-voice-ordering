@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, Sparkles, Zap, Wand2, SparklesIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import PasswordConfirmInput from "@/components/ui/assisted-password-confirmation";
+import "@/components/ui/return-button.css";
 
 interface PupilProps {
   size?: number;
@@ -177,6 +179,7 @@ interface LoginPageProps {
 }
 
 function LoginPage({ onLoginSuccess }: LoginPageProps) {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState("");
@@ -298,6 +301,35 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
     const bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
 
     return { faceX, faceY, bodySkew };
+  };
+
+  // Quick fill function with amazing animation effects
+  const handleQuickFill = async () => {
+    const demoEmail = "admin@restaurant.com";
+    const demoPassword = "admin123";
+
+    // Create typing animation effect
+    setEmail("");
+    setPassword("");
+
+    // Animate email typing
+    for (let i = 0; i <= demoEmail.length; i++) {
+      setEmail(demoEmail.slice(0, i));
+      await new Promise(resolve => setTimeout(resolve, 30));
+    }
+
+    // Small pause before password
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Animate password typing
+    for (let i = 0; i <= demoPassword.length; i++) {
+      setPassword(demoPassword.slice(0, i));
+      await new Promise(resolve => setTimeout(resolve, 40));
+    }
+
+    // Trigger character reactions
+    setIsTyping(true);
+    setTimeout(() => setIsTyping(false), 1000);
   };
 
   const purplePos = calculatePosition(purpleRef);
@@ -563,13 +595,29 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
           </div>
 
           {/* Header */}
-          <div className="text-center mb-10" dir="rtl">
-            <h1 className="text-4xl font-black tracking-tight mb-3">
-              {isSignUpMode ? "إنشاء حساب جديد!" : "مرحباً بعودتك!"}
-            </h1>
-            <p className="text-muted-foreground text-lg font-medium">
-              {isSignUpMode ? "يرجى إدخال بياناتك لإنشاء حساب" : "يرجى إدخال بياناتك"}
-            </p>
+          <div className="flex items-center justify-between mb-10" dir="rtl">
+            {/* Return to Home Button */}
+            <button
+              className="Btn"
+              onClick={() => router.push('/')}
+              title="الصفحة الرئيسية"
+            >
+              <div className="sign">
+                <svg viewBox="0 0 512 512">
+                  <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+                </svg>
+              </div>
+              <div className="text">الصفحة الرئيسيه</div>
+            </button>
+
+            <div className="text-center flex-1">
+              <h1 className="text-4xl font-black tracking-tight mb-3">
+                {isSignUpMode ? "إنشاء حساب جديد!" : "مرحباً بعودتك!"}
+              </h1>
+              <p className="text-muted-foreground text-lg font-medium">
+                {isSignUpMode ? "يرجى إدخال بياناتك لإنشاء حساب" : "يرجى إدخال بياناتك"}
+              </p>
+            </div>
           </div>
 
           {/* Login Form */}
@@ -680,12 +728,18 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
             </Button>
           </div>
 
-          {/* Demo credentials note - Show only in login mode */}
+          {/* Green Apple-style Quick Fill Button - Show only in login mode */}
           {!isSignUpMode && (
-            <div className="mt-6 p-6 bg-green-50 border border-green-200 rounded-lg" dir="rtl">
-              <p className="text-lg text-green-800 font-black mb-2 text-right">بيانات التجريب:</p>
-              <p className="text-base text-green-700 font-medium mb-1 text-right">البريد الإلكتروني: admin@restaurant.com</p>
-              <p className="text-base text-green-700 font-medium text-right">كلمة المرور: admin123</p>
+            <div className="mt-6" dir="rtl">
+              <button
+                onClick={handleQuickFill}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold text-base py-3 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  استخدام بيانات التجريب
+                </span>
+              </button>
             </div>
           )}
         </div>
