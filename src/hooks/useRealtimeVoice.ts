@@ -5,9 +5,11 @@ import { RealtimeAgent, RealtimeSession } from "@openai/agents/realtime";
 import type { OrderState, OrderItem } from "@/app/customer/page";
 
 export type ConversationMessage = {
-  speaker: "customer" | "agent";
+  speaker: "customer" | "agent" | "order_update";
   text: string;
   timestamp: number;
+  orderItems?: any[];
+  isOrderSummary?: boolean;
 };
 
 type UseRealtimeVoiceProps = {
@@ -642,6 +644,22 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
     }
   }, [onItemsUpdate]);
 
+  const addOrderUpdate = useCallback((orderItems: OrderItem[]) => {
+    const orderMessage: ConversationMessage = {
+      speaker: 'order_update',
+      text: 'Current order summary',
+      timestamp: Date.now(),
+      orderItems: orderItems,
+      isOrderSummary: true
+    };
+
+    conversationRef.current.push(orderMessage);
+
+    if (onConversationUpdate) {
+      onConversationUpdate([...conversationRef.current]);
+    }
+  }, [onConversationUpdate]);
+
   const addMessage = useCallback((speaker: "customer" | "agent", text: string) => {
     if (!text || !text.trim()) return;
     
@@ -696,27 +714,57 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
       /طلبك\s+جاهز/i,
       /تم\s+الطلب/i,
       /الطلب\s+كامل/i,
-      // Customer explicitly saying they're finished
+      // Customer explicitly saying they're finished - Enhanced patterns
       /(?:that's|that is)\s+(?:it|all|everything)/i,
       /(?:I'm|i am)\s+(?:done|finished)/i,
+      /I\s+finished\s+(?:my\s+)?order/i,
+      /I\s+(?:have\s+)?finished/i,
+      /finished\s+(?:my\s+)?order/i,
+      /order\s+finished/i,
       /(?:nothing|no)\s+(?:else)/i,
       /(?:هذا|ده)\s+(?:كل|كلوش)\s+(?:حاجه|شيء)/i,
       /(?:أنا)\s+(?:مخلص|مخلصش|عجزت|نزلت)/i,
+      /(?:أنا)\s+(?:انتهيت|خلصت|مليت)\s+(?:الطلب|من الطلب)/i,
       /(?:مفيش|ما فيش)\s+(?:تاني|ثاني|حاجة|شيء)/i,
       /(?:كده|كدا)\s+(?:كفاية|بس|يلا)/i,
       /(?:خلاص|تمام|كله)\s+(?:بس)/i,
       /(?:انهينا|خلصنا)\s+(?:الطلب)/i,
+      /انهينا\s+الطلب/i,
+      /تم\s+انتهاء\s+الطلب/i,
+      // Agent confirmation patterns
+      /تم\s+(?:إنهاء|انهاء)\s+الطلب\s+بنجاح/i,
+      /الطلب\s+(?:تم|اكتمل|جاهز)\s+بنجاح/i,
+      /تم\s+(?:تأكيد|تاكيد)\s+طلبك/i,
+      /order\s+(?:has\s+been|is)\s+(?:confirmed|completed|ready)/i,
+      /your\s+order\s+(?:has\s+been|is)\s+(?:confirmed|completed|ready)/i,
+      /تمام،?\s*تم\s+إنهاء\s+الطلب\s+بنجاح/i,
     ];
 
     const isCustomerFinished = orderCompletePatterns.some(pattern => pattern.test(cleanText));
 
-    if (speaker === 'customer' && isCustomerFinished && currentOrderRef.current.length > 0) {
+    // DEBUG: Log order completion detection
+    console.log("🔍 Order completion detection:", {
+      speaker,
+      text: cleanText,
+      isCustomerFinished,
+      itemCount: currentOrderRef.current.length,
+      patterns: orderCompletePatterns.map(p => p.toString())
+    });
+
+    // Check if order completion should be triggered
+    const shouldTriggerOrderComplete =
+      // Customer says they're finished
+      (speaker === 'customer' && isCustomerFinished && currentOrderRef.current.length > 0) ||
+      // Agent confirms order completion AND we have items in the order
+      (speaker === 'agent' && isCustomerFinished && currentOrderRef.current.length > 0);
+
+    if (shouldTriggerOrderComplete) {
       const timeSinceLastDeletion = Date.now() - lastDeletionTime;
       
       if (timeSinceLastDeletion < 3000) {
         console.log("🚫 Ignoring order completion - deletion happened", timeSinceLastDeletion, "ms ago");
       } else {
-        console.log("✅✅✅ CUSTOMER SAID THEY'RE FINISHED - Showing order summary NOW!");
+        console.log(`✅✅✅ ORDER COMPLETION DETECTED from ${speaker} - Showing order summary NOW!`);
         const items = currentOrderRef.current;
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -1119,5 +1167,6 @@ You: "Perfect! Your order is: 1 Chicken Burger [no cheese], 1 Cheeseburger. Woul
     audioLevel,
     disconnect,
     removeItem,
+    addOrderUpdate,
   };
 }
