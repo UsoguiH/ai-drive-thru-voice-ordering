@@ -31,7 +31,7 @@ export default function ConfirmationScreen({ language }: ConfirmationScreenProps
       subtitle: "Your order has been sent to the kitchen",
       message: "Please proceed to the pick-up window",
       thankyou: "Thank you for your order",
-      returning: "Returning to welcome screen in",
+      returning: "Preparing for next customer in",
       seconds: "seconds",
     },
     ar: {
@@ -39,7 +39,7 @@ export default function ConfirmationScreen({ language }: ConfirmationScreenProps
       subtitle: "تم إرسال طلبك إلى المطبخ",
       message: "يرجى التوجه إلى نافذة الاستلام",
       thankyou: "شكراً لطلبك",
-      returning: "العودة إلى الشاشة الرئيسية خلال",
+      returning: "جاري التحضير للعميل التالي خلال",
       seconds: "ثواني",
     },
   };

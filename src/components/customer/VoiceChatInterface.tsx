@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingCart } from "lucide-react";
 import { useRealtimeVoice, type ConversationMessage } from "@/hooks/useRealtimeVoice";
@@ -54,11 +54,23 @@ export default function VoiceChatInterface({
   const [currentItems, setCurrentItems] = useState<OrderItem[]>([]);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const [micPermissionGranted, setMicPermissionGranted] = useState(false);
+  const conversationEndRef = useRef<HTMLDivElement>(null);
+  const orderItemsRef = useRef<HTMLDivElement>(null);
 
   // Debug: Log conversation updates
   useEffect(() => {
     if (conversation.length > 0) {
       console.log('🗨️ Chat Interface - Conversation updated:', conversation);
+    }
+  }, [conversation]);
+
+  // Auto-scroll to AI messages when new messages are added
+  useEffect(() => {
+    // Focus on the conversation end (AI messages area) when conversation updates
+    if (conversation.length > 0) {
+      setTimeout(() => {
+        conversationEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   }, [conversation]);
 
@@ -84,7 +96,7 @@ export default function VoiceChatInterface({
     requestMicPermission();
   }, []);
 
-  const { isConnected, isListening, error, disconnect, removeItem } = useRealtimeVoice({
+  const { isConnected, isListening, error, disconnect, removeItem, addOrderUpdate } = useRealtimeVoice({
     language,
     onOrderComplete,
     onTranscriptUpdate: (text) => {
@@ -97,6 +109,11 @@ export default function VoiceChatInterface({
         customizations: i.customizations
       })));
       setCurrentItems(items);
+
+      // Add order update to conversation whenever items change
+      if (items.length > 0) {
+        addOrderUpdate(items);
+      }
     },
     onConversationUpdate: (messages) => {
       setConversation(messages);
@@ -253,123 +270,131 @@ export default function VoiceChatInterface({
               <div className="container-chat-ia">
                 <div className="container-chat">
                   <div className="container-chat-limit">
-                    <Conversation className="relative size-full" style={{ height: '600px' }}>
-                      <ConversationContent>
-                        {conversation.length === 0 && currentItems.length === 0 ? null : (
-                          <>
+                    <Conversation className="relative size-full overflow-y-auto" style={{ height: 'calc(75vh - 60px)', scrollBehavior: 'smooth' }}>
+                      <ConversationContent className="flex flex-col justify-end min-h-full pb-4">
+                        {/* Order Items Section - No scrolling, full height */}
+                        {currentItems.length > 0 && (
+                          <div ref={orderItemsRef} className="mb-4">
+                            <Message from="user">
+                              <MessageContent from="user">
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-w-[800px]" dir="rtl">
+                                  {/* Simple Items Count Header */}
+                                  <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                      <p className="text-sm text-gray-500">{currentItems.length} أصناف</p>
+                                    </div>
+                                  </div>
 
-                          {/* Customer messages */}
-                            {conversation.map((message, index) =>
-                              message.speaker === 'customer' && (
-                                <Message from="user" key={`customer-${index}`}>
-                                  <MessageContent from="user">{message.text}</MessageContent>
-                                  <MessageAvatar name="العميل" />
-                                </Message>
-                              )
-                            )}
+                                  {/* Order Items Layout */}
+                                  <div className="space-y-4">
+                                    {currentItems.map((item: any, itemIndex: number) => (
+                                      <motion.div
+                                        key={itemIndex}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                          duration: 0.3,
+                                          delay: itemIndex * 0.1,
+                                          ease: "easeOut"
+                                        }}
+                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl"
+                                      >
+                                        {/* Item Image Placeholder */}
+                                        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                                          <div className="w-8 h-8 bg-gray-300 rounded-lg"></div>
+                                        </div>
 
-                            {/* AI messages */}
-                            {conversation.map((message, index) =>
-                              message.speaker === 'agent' && (
+                                        {/* Item Details */}
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-semibold text-gray-900 text-lg mb-1">
+                                            {isRTL && item.nameAr ? item.nameAr : item.name}
+                                          </h4>
+
+                                          {/* Customizations in Green */}
+                                          {item.customizations && item.customizations.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5 mt-2">
+                                              {item.customizations.map((customization: string, customIndex: number) => (
+                                                <span
+                                                  key={customIndex}
+                                                  className="inline-flex items-center px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg text-xs font-medium text-green-700"
+                                                >
+                                                  <svg className="w-3 h-3 ml-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                  </svg>
+                                                  {customization}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Quantity Display */}
+                                        <div className="flex flex-col items-center">
+                                          <span className="text-xs text-gray-500 font-medium">الكمية</span>
+                                          <div className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border-2 border-green-500 mt-1">
+                                            <span className="text-lg font-bold text-green-600">{item.quantity}</span>
+                                          </div>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="text-left">
+                                          <p className="text-lg font-semibold text-gray-900 flex items-center gap-1 flex-row-reverse">
+                                            {(item.price * item.quantity).toFixed(2)}
+                                            <SARSymbol />
+                                          </p>
+                                        </div>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+
+                                  {/* Total Summary */}
+                                  <div className="mt-6 pt-6 border-t border-gray-100">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xl font-semibold text-gray-900">الإجمالي</span>
+                                      <span className="text-3xl font-bold text-green-600 flex items-center gap-2 flex-row-reverse">
+                                        {totalAmount.toFixed(2)}
+                                        <SARSymbol />
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </MessageContent>
+                              <MessageAvatar name="عميل" />
+                            </Message>
+                          </div>
+                        )}
+
+                        {/* AI Chat Messages - Separate section below order items */}
+                        {conversation.length > 0 && (
+                          <div className="space-y-4">
+                            {conversation
+                              .filter(message => message.speaker === 'agent')
+                              .sort((a, b) => a.timestamp - b.timestamp)
+                              .map((message, index) => (
                                 <Message from="assistant" key={`ai-${index}`}>
                                   <MessageContent from="assistant">{message.text}</MessageContent>
                                   <MessageAvatar name="المساعد" />
                                 </Message>
-                              )
-                            )}
-
-                            {/* Show current order items as customer message - Voice Interface Display */}
-                            {currentItems.length > 0 && (
-                              <Message from="user" key="order-summary">
-                                <MessageContent from="user">
-                                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-w-[600px]" dir="rtl">
-                                    {/* Simple Items Count Header */}
-                                    <div className="flex items-center justify-between mb-6">
-                                      <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        <p className="text-sm text-gray-500">{currentItems.length} أصناف</p>
-                                      </div>
-                                    </div>
-
-                                    {/* Horizontal Order Items Layout - Display Only */}
-                                    <div className="space-y-4">
-                                      {currentItems.map((item, itemIndex) => (
-                                        <motion.div
-                                          key={itemIndex}
-                                          initial={{ opacity: 0, x: -20 }}
-                                          animate={{ opacity: 1, x: 0 }}
-                                          transition={{
-                                            duration: 0.3,
-                                            delay: itemIndex * 0.1,
-                                            ease: "easeOut"
-                                          }}
-                                          className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl"
-                                        >
-                                          {/* Item Image Placeholder */}
-                                          <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                                            <div className="w-8 h-8 bg-gray-300 rounded-lg"></div>
-                                          </div>
-
-                                          {/* Item Details */}
-                                          <div className="flex-1 min-w-0">
-                                            <h4 className="font-semibold text-gray-900 text-base mb-1">
-                                              {isRTL && item.nameAr ? item.nameAr : item.name}
-                                            </h4>
-
-                                            {/* Customizations in Green */}
-                                            {item.customizations && item.customizations.length > 0 && (
-                                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                                {item.customizations.map((customization, customIndex) => (
-                                                  <span
-                                                    key={customIndex}
-                                                    className="inline-flex items-center px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg text-xs font-medium text-green-700"
-                                                  >
-                                                    <svg className="w-3 h-3 ml-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                    </svg>
-                                                    {customization}
-                                                  </span>
-                                                ))}
-                                              </div>
-                                            )}
-                                          </div>
-
-                                          {/* Quantity Display Only */}
-                                          <div className="flex flex-col items-center">
-                                            <span className="text-xs text-gray-500 font-medium">الكمية</span>
-                                            <div className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border-2 border-green-500 mt-1">
-                                              <span className="text-lg font-bold text-green-600">{item.quantity}</span>
-                                            </div>
-                                          </div>
-
-                                          {/* Price */}
-                                          <div className="text-left">
-                                            <p className="text-lg font-semibold text-gray-900 flex items-center gap-1 flex-row-reverse">
-                                              {(item.price * item.quantity).toFixed(2)}
-                                              <SARSymbol />
-                                            </p>
-                                          </div>
-                                        </motion.div>
-                                      ))}
-                                    </div>
-
-                                    {/* Simple Total Summary */}
-                                    <div className="mt-6 pt-6 border-t border-gray-100">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-lg font-semibold text-gray-900">الإجمالي</span>
-                                        <span className="text-2xl font-bold text-green-600 flex items-center gap-2 flex-row-reverse">
-                                          {totalAmount.toFixed(2)}
-                                          <SARSymbol />
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </MessageContent>
-                                <MessageAvatar name="عميل" />
-                              </Message>
-                            )}
-                          </>
+                              ))}
+                          </div>
                         )}
+
+                        {/* Customer Chat Messages - Separate section */}
+                        {conversation.length > 0 && (
+                          <div className="space-y-4 mt-4">
+                            {conversation
+                              .filter(message => message.speaker === 'customer')
+                              .sort((a, b) => a.timestamp - b.timestamp)
+                              .map((message, index) => (
+                                <Message from="user" key={`customer-${index}`}>
+                                  <MessageContent from="user">{message.text}</MessageContent>
+                                  <MessageAvatar name="العميل" />
+                                </Message>
+                              ))}
+                          </div>
+                        )}
+                        <div ref={conversationEndRef} />
                       </ConversationContent>
                     </Conversation>
                   </div>
@@ -393,11 +418,11 @@ export default function VoiceChatInterface({
         }
 
         .input-orb:checked ~ .container-chat-ia {
-          width: 90vw;
-          height: 700px;
+          width: 95vw;
+          height: 85vh;
           filter: blur(0px);
           opacity: 1;
-          max-width: 1600px;
+          max-width: 1800px;
           position: fixed;
           left: 50%;
           top: 50%;
@@ -409,7 +434,7 @@ export default function VoiceChatInterface({
           filter: drop-shadow(0 0 24px rgba(145, 71, 255, 0.3))
             drop-shadow(0 0 10px rgba(255, 0, 0, 0.3));
           transform-origin: center center;
-          transform: translate(-50%, 220px);
+          transform: translate(-50%, 220px) scale(0.75);
           pointer-events: auto;
           z-index: 1000000;
 
@@ -419,7 +444,7 @@ export default function VoiceChatInterface({
           }
 
           &:hover {
-            transform: translate(-50%, 220px) scale(1.1);
+            transform: translate(-50%, 220px) scale(0.85);
 
             & .icons .svg .mic {
               opacity: 0;
@@ -598,14 +623,14 @@ export default function VoiceChatInterface({
           width: 100%;
           height: 100%;
           font-size: 32px;
-          background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%);
+          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
           border-radius: 3rem;
           overflow: hidden;
           backdrop-filter: blur(20px);
           box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            0 20px 60px rgba(210, 255, 0, 0.08),
+            0 0 0 1px rgba(210, 255, 0, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         .container-chat-limit {
@@ -613,7 +638,8 @@ export default function VoiceChatInterface({
           -webkit-mask: linear-gradient(0deg, white 85%, transparent 95% 100%);
           mask: linear-gradient(0deg, white 85%, transparent 95% 100%);
           z-index: 999;
-          background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%);
+          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
+          padding-top: 60px;
         }
 
         .chat-container {
@@ -622,7 +648,7 @@ export default function VoiceChatInterface({
           height: 100%;
           width: 100%;
           padding: 1rem;
-          background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%);
+          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
         }
 
         @keyframes animation-chats {
@@ -647,8 +673,8 @@ export default function VoiceChatInterface({
           top: 50%;
           transform-origin: left top;
           transform: translate(-50%, -50%);
-          width: 128px;
-          height: 128px;
+          width: 192px;
+          height: 192px;
           display: flex;
           transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           cursor: pointer;
@@ -681,10 +707,10 @@ export default function VoiceChatInterface({
 
         .ball {
           display: flex;
-          width: 128px;
-          height: 128px;
+          width: 192px;
+          height: 192px;
           flex-shrink: 0;
-          border-radius: 50px;
+          border-radius: 75px;
           background-color: #ff0002;
           filter: url(#gooey);
         }
@@ -694,8 +720,8 @@ export default function VoiceChatInterface({
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 200px;
-          height: 200px;
+          width: 300px;
+          height: 300px;
           background-image: radial-gradient(
             ellipse at center,
             rgba(255, 255, 255, 0.75) 15%,
@@ -827,7 +853,7 @@ export default function VoiceChatInterface({
             inset: 0;
             background: linear-gradient(white, blue, magenta, violet, lightyellow);
             border-radius: 50%;
-            border: 12px solid transparent;
+            border: 18px solid transparent;
             mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
             mask-composite: exclude;
           }

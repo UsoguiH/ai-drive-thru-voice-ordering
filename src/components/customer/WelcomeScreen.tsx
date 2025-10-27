@@ -9,6 +9,50 @@ type WelcomeScreenProps = {
 
 export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   return (
+    <>
+      <style jsx global>{`
+        .welcome-btn {
+          padding: 2.2em 4em;
+          background: none;
+          border: 4px solid #fff;
+          font-size: 30px;
+          color: #131313;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s;
+          border-radius: 24px;
+          background-color: #ffbe0b;
+          font-weight: bolder;
+          box-shadow: 0 4px 0 4px #000;
+        }
+
+        .welcome-btn:before {
+          content: "";
+          position: absolute;
+          width: 800px;
+          height: 150%;
+          background-color: #ff0000;
+          top: 50%;
+          transform: skewX(30deg) translate(-150%, -50%);
+          transition: all 0.7s ease-in-out;
+        }
+
+        .welcome-btn:hover {
+          background-color: #4cc9f0;
+          color: #fff;
+          box-shadow: 0 4px 0 4px #0d3b66;
+        }
+
+        .welcome-btn:hover::before {
+          transform: skewX(30deg) translate(150%, -50%);
+          transition-delay: 0.1s;
+        }
+
+        .welcome-btn:active {
+          transform: scale(0.9);
+        }
+      `}</style>
     <div className="min-h-screen flex items-center justify-center p-8 relative" dir="rtl">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -59,38 +103,31 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           className="flex flex-col sm:flex-row gap-6 justify-center items-center"
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onStart("ar")}
-            className="group relative overflow-hidden w-full sm:w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 transition-all duration-300 hover:bg-white/15 hover:border-white/30"
+            className="welcome-btn w-full sm:w-[600px]"
           >
-            <div className="relative z-10 flex items-center justify-center gap-4">
-              <Globe className="w-8 h-8 text-purple-400" />
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">العربية</div>
-                <div className="text-lg text-gray-400">ابدأ الطلب</div>
-              </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">العربية</div>
+              <div className="text-lg font-medium">ابدأ الطلب</div>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-600/0 group-hover:from-purple-500/10 group-hover:to-purple-600/10 transition-all duration-300" />
           </motion.button>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onStart("en")}
-            className="group relative overflow-hidden w-full sm:w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 transition-all duration-300 hover:bg-white/15 hover:border-white/30"
+            className="welcome-btn w-full sm:w-[600px]"
           >
-            <div className="relative z-10 flex items-center justify-center gap-4">
-              <Globe className="w-8 h-8 text-blue-400" />
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">English</div>
-                <div className="text-lg text-gray-400">Start ordering</div>
-              </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">English</div>
+              <div className="text-lg font-medium">Start ordering</div>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-600/0 group-hover:from-blue-500/10 group-hover:to-blue-600/10 transition-all duration-300" />
           </motion.button>
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

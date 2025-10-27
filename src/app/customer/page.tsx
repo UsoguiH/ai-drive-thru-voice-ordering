@@ -59,18 +59,26 @@ export default function CustomerPage() {
       console.log('✅ Order submitted successfully! Order ID:', result.orderId);
       setCurrentScreen("confirmation");
 
-      // Reset after showing confirmation
+      // Complete reset after showing confirmation - refresh for next customer
       setTimeout(() => {
+        console.log('🔄 Starting complete reset for next customer...');
         setCurrentScreen("welcome");
         setOrder({ items: [], total: 0, language: "ar" });
+
+        // Trigger complete page refresh to clear all global state and microphone
+        window.location.reload();
       }, 13000);
     } else {
       console.error('❌ Order submission failed:', result.error);
       // Still show confirmation to customer, but order will be retried
       setCurrentScreen("confirmation");
       setTimeout(() => {
+        console.log('🔄 Starting complete reset for next customer...');
         setCurrentScreen("welcome");
         setOrder({ items: [], total: 0, language: "ar" });
+
+        // Trigger complete page refresh to clear all global state and microphone
+        window.location.reload();
       }, 13000);
     }
   };
@@ -80,8 +88,12 @@ export default function CustomerPage() {
   };
 
   const handleCancelOrder = () => {
+    console.log('🔄 Canceling order and resetting for next customer...');
     setCurrentScreen("welcome");
     setOrder({ items: [], total: 0, language: "ar" });
+
+    // Trigger complete page refresh to clear all global state and microphone
+    window.location.reload();
   };
 
   return (
