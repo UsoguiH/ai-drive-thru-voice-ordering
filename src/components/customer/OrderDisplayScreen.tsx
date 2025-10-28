@@ -87,23 +87,23 @@ export default function OrderDisplayScreen({
         setOrderSubmitted(true);
         setOrderId(result.orderId || null);
 
-        // After successful submission, wait 2 seconds then return to welcome screen
+        // After successful submission, wait 2 seconds then proceed to feedback screen
         setTimeout(() => {
-          console.log('🔄 Returning to welcome screen for next customer...');
-          onCancel(); // This will reset and go back to welcome screen
+          console.log('🔄 Proceeding to feedback screen...');
+          onConfirm(); // This will proceed to feedback screen
         }, 2000);
       } else {
         console.error('❌ Order auto-submission failed:', result.error);
-        // Still return to welcome screen even if submission failed
+        // Still proceed to feedback screen even if submission failed
         setTimeout(() => {
-          onCancel();
+          onConfirm();
         }, 2000);
       }
     } catch (error) {
       console.error('❌ Error auto-submitting order:', error);
-      // Return to welcome screen even on error
+      // Still proceed to feedback screen even on error
       setTimeout(() => {
-        onCancel();
+        onConfirm();
       }, 2000);
     }
   };
