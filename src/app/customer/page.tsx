@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import WelcomeScreen from "@/components/customer/WelcomeScreen";
 import VoiceChatInterface from "@/components/customer/VoiceChatInterface";
 import OrderDisplayScreen from "@/components/customer/OrderDisplayScreen";
-import ConfirmationScreen from "@/components/customer/ConfirmationScreen";
+import FeedbackScreen from "@/components/customer/FeedbackScreen";
 import { submitOrderToKitchen, orderToJSON, createOrderSummary } from "@/utils/orderProcessor";
 
 export type OrderItem = {
@@ -22,7 +22,7 @@ export type OrderState = {
   language: "en" | "ar";
 };
 
-type Screen = "welcome" | "listening" | "display" | "confirmation";
+type Screen = "welcome" | "listening" | "display" | "feedback";
 
 export default function CustomerPage() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("welcome");
@@ -57,30 +57,26 @@ export default function CustomerPage() {
 
     if (result.success) {
       console.log('✅ Order submitted successfully! Order ID:', result.orderId);
-      setCurrentScreen("confirmation");
-
-      // Complete reset after showing confirmation - refresh for next customer
-      setTimeout(() => {
-        console.log('🔄 Starting complete reset for next customer...');
-        setCurrentScreen("welcome");
-        setOrder({ items: [], total: 0, language: "ar" });
-
-        // Trigger complete page refresh to clear all global state and microphone
-        window.location.reload();
-      }, 13000);
+      setCurrentScreen("feedback");
     } else {
       console.error('❌ Order submission failed:', result.error);
-      // Still show confirmation to customer, but order will be retried
-      setCurrentScreen("confirmation");
-      setTimeout(() => {
-        console.log('🔄 Starting complete reset for next customer...');
-        setCurrentScreen("welcome");
-        setOrder({ items: [], total: 0, language: "ar" });
-
-        // Trigger complete page refresh to clear all global state and microphone
-        window.location.reload();
-      }, 13000);
+      // Still show feedback screen to customer, but order will be retried
+      setCurrentScreen("feedback");
     }
+  };
+
+  const handleFeedbackComplete = () => {
+    console.log('🔄 Returning to main customer screen after feedback...');
+    setCurrentScreen("welcome");
+    setOrder({ items: [], total: 0, language: "ar" });
+
+    // Trigger complete page refresh to clear all global state and microphone
+    window.location.reload();
+  };
+
+  const handleFeedbackSkip = () => {
+    console.log('⏭️ Customer skipped feedback');
+    handleFeedbackComplete();
   };
 
   const handleEditOrder = () => {
@@ -144,18 +140,23 @@ export default function CustomerPage() {
           </motion.div>
         )}
 
-        {currentScreen === "confirmation" && (
+        {currentScreen === "feedback" && (
           <motion.div
-            key="confirmation"
-            initial={{ opacity: 0, scale: 0.8 }}
+            key="feedback"
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.2 }}
+            exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.5 }}
           >
-            <ConfirmationScreen language={order.language} />
+            <FeedbackScreen
+              language={order.language}
+              onComplete={handleFeedbackComplete}
+              onSkip={handleFeedbackSkip}
+            />
           </motion.div>
         )}
-      </AnimatePresence>
+
+              </AnimatePresence>
     </div>
   );
 }
