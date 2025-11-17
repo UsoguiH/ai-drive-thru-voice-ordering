@@ -191,9 +191,9 @@ const FeedbackSlider = React.forwardRef<HTMLDivElement, FeedbackSliderProps>(
         dir={isRTL ? "rtl" : "ltr"}
         {...props}
       >
-        <div className="flex h-full w-[500px] flex-col items-center justify-center p-4">
+        <div className="flex h-full w-[400px] flex-col items-center justify-center p-4">
           <motion.h3
-            className="mb-10 w-full text-center text-5xl font-black px-8"
+            className="mb-10 w-72 text-center text-5xl font-black"
             animate={{ color: currentAnim.titleColor }}
             transition={transition}
           >
@@ -232,26 +232,20 @@ const FeedbackSlider = React.forwardRef<HTMLDivElement, FeedbackSliderProps>(
             </motion.div>
           </div>
 
-          {/* Rating Text Under Face - Show for both languages */}
-          <motion.div
-            className="mt-6 text-center"
-            animate={{ color: currentAnim.titleColor }}
-            transition={transition}
-          >
-            <h2 className="text-5xl font-black">
-              {language === "ar" ? (
-                // Arabic labels
-                selectedIndex === 0 ? "سيء" :
-                selectedIndex === 1 ? "أقل من المتوقع" :
-                "ممتاز"
-              ) : (
-                // English labels
-                selectedIndex === 0 ? "BAD" :
-                selectedIndex === 1 ? "NOT BAD" :
-                "GOOD"
-              )}
-            </h2>
-          </motion.div>
+          {/* Arabic Text Under Face */}
+          {language === "ar" && (
+            <motion.div
+              className="mt-6 text-center"
+              animate={{ color: currentAnim.titleColor }}
+              transition={transition}
+            >
+              <h2 className="text-4xl font-bold">
+                {selectedIndex === 0 && "سيء"}
+                {selectedIndex === 1 && "أقل من المتوقع"}
+                {selectedIndex === 2 && "ممتاز"}
+              </h2>
+            </motion.div>
+          )}
 
           <div className="flex w-full items-center justify-start overflow-hidden pb-14 pt-7">
             <motion.div
@@ -263,7 +257,6 @@ const FeedbackSlider = React.forwardRef<HTMLDivElement, FeedbackSliderProps>(
                 <div
                   key={i}
                   className="flex w-full shrink-0 items-center justify-center"
-                  style={{ minWidth: "100%" }}
                 >
                   <h1
                     className="text-7xl font-black"

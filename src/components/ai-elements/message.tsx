@@ -35,8 +35,8 @@ export function MessageContent({ children, from, className }: MessageContentProp
       className={cn(
         'max-w-[90%] rounded-2xl px-5 py-3.5 font-medium leading-relaxed transition-all duration-300',
         from === 'user'
-          ? 'bg-gray-50 text-gray-900 justify-self-end text-lg'
-          : 'bg-blue-50 text-blue-900 justify-self-end text-lg',
+          ? 'bg-gray-800/50 text-white justify-self-end text-lg border border-white/10'
+          : 'bg-blue-900/50 text-blue-100 justify-self-end text-lg border border-blue-300/10',
         className
       )}
     >

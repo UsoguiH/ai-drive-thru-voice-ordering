@@ -12,7 +12,7 @@ export function Conversation({ children, className }: ConversationProps) {
     <div
       className={cn(
         'relative flex h-full w-full flex-col overflow-hidden',
-        'bg-gradient-to-br from-lime-25 via-green-25 to-emerald-25',
+        'bg-transparent',
         className
       )}
     >

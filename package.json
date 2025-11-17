@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "@babel/parser": "^7.28.4",
+        "@dotlottie/react-player": "^1.6.19",
         "@headlessui/react": "^2.2.8",
         "@heroicons/react": "^2.2.0",
         "@hookform/resolvers": "^5.1.1",

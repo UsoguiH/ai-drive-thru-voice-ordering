@@ -277,7 +277,7 @@ export default function VoiceChatInterface({
                           <div ref={orderItemsRef} className="mb-4">
                             <Message from="user">
                               <MessageContent from="user">
-                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-w-[800px]" dir="rtl">
+                                <div className="bg-gray-800/50 rounded-2xl shadow-sm border border-white/10 p-8 min-w-[800px]" dir="rtl">
                                   {/* Simple Items Count Header */}
                                   <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-2">
@@ -298,16 +298,16 @@ export default function VoiceChatInterface({
                                           delay: itemIndex * 0.1,
                                           ease: "easeOut"
                                         }}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl"
+                                        className="flex items-center gap-4 p-4 bg-gray-700/50 rounded-xl border border-white/5"
                                       >
                                         {/* Item Image Placeholder */}
-                                        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                                          <div className="w-8 h-8 bg-gray-300 rounded-lg"></div>
+                                        <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/10">
+                                          <div className="w-8 h-8 bg-gray-600 rounded-lg"></div>
                                         </div>
 
                                         {/* Item Details */}
                                         <div className="flex-1 min-w-0">
-                                          <h4 className="font-semibold text-gray-900 text-lg mb-1">
+                                          <h4 className="font-semibold text-white text-lg mb-1">
                                             {isRTL && item.nameAr ? item.nameAr : item.name}
                                           </h4>
 
@@ -332,14 +332,14 @@ export default function VoiceChatInterface({
                                         {/* Quantity Display */}
                                         <div className="flex flex-col items-center">
                                           <span className="text-xs text-gray-500 font-medium">الكمية</span>
-                                          <div className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border-2 border-green-500 mt-1">
+                                          <div className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded-lg border-2 border-green-500 mt-1">
                                             <span className="text-lg font-bold text-green-600">{item.quantity}</span>
                                           </div>
                                         </div>
 
                                         {/* Price */}
                                         <div className="text-left">
-                                          <p className="text-lg font-semibold text-gray-900 flex items-center gap-1 flex-row-reverse">
+                                          <p className="text-lg font-semibold text-white flex items-center gap-1 flex-row-reverse">
                                             {(item.price * item.quantity).toFixed(2)}
                                             <SARSymbol />
                                           </p>
@@ -349,9 +349,9 @@ export default function VoiceChatInterface({
                                   </div>
 
                                   {/* Total Summary */}
-                                  <div className="mt-6 pt-6 border-t border-gray-100">
+                                  <div className="mt-6 pt-6 border-t border-white/10">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xl font-semibold text-gray-900">الإجمالي</span>
+                                      <span className="text-xl font-semibold text-white">الإجمالي</span>
                                       <span className="text-3xl font-bold text-green-600 flex items-center gap-2 flex-row-reverse">
                                         {totalAmount.toFixed(2)}
                                         <SARSymbol />
@@ -623,14 +623,16 @@ export default function VoiceChatInterface({
           width: 100%;
           height: 100%;
           font-size: 32px;
-          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
+          background: #1a202c;
           border-radius: 3rem;
           overflow: hidden;
           backdrop-filter: blur(20px);
           box-shadow:
-            0 20px 60px rgba(210, 255, 0, 0.08),
-            0 0 0 1px rgba(210, 255, 0, 0.05),
-            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            0 25px 80px rgba(15, 23, 42, 0.4),
+            0 0 0 1px rgba(148, 163, 184, 0.2),
+            0 4px 12px rgba(15, 23, 42, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -1px 0 rgba(15, 23, 42, 0.3);
         }
 
         .container-chat-limit {
@@ -638,7 +640,7 @@ export default function VoiceChatInterface({
           -webkit-mask: linear-gradient(0deg, white 85%, transparent 95% 100%);
           mask: linear-gradient(0deg, white 85%, transparent 95% 100%);
           z-index: 999;
-          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
+          background: #1a202c;
           padding-top: 60px;
         }
 
@@ -648,7 +650,7 @@ export default function VoiceChatInterface({
           height: 100%;
           width: 100%;
           padding: 1rem;
-          background: linear-gradient(135deg, #f7ffed 0%, #f0ffe8 15%, #e9ffe3 30%, #f2ffea 45%, #f5ffec 60%, #f8ffef 75%, #f7ffed 100%);
+          background: #1a202c;
         }
 
         @keyframes animation-chats {
