@@ -35,8 +35,8 @@ export function MessageContent({ children, from, className }: MessageContentProp
       className={cn(
         'max-w-[90%] rounded-2xl px-5 py-3.5 font-medium leading-relaxed transition-all duration-300',
         from === 'user'
-          ? 'bg-gray-800/50 text-white justify-self-end text-lg border border-white/10'
-          : 'bg-blue-900/50 text-blue-100 justify-self-end text-lg border border-blue-300/10',
+          ? 'bg-white text-gray-800 justify-self-end text-lg border border-gray-200 shadow-sm'
+          : 'bg-blue-500 text-white justify-self-end text-lg border border-blue-600 shadow-sm',
         className
       )}
     >
@@ -65,7 +65,7 @@ export function MessageAvatar({ name, src, className }: MessageAvatarProps) {
         'flex shrink-0 items-center justify-center rounded-2xl transition-all duration-300',
         isAssistant
           ? 'h-14 w-14 bg-gradient-to-br from-gray-100 to-gray-50 text-gray-700 shadow-lg border border-gray-200/50 relative overflow-hidden'
-          : 'h-14 w-14 bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-medium shadow-lg',
+          : 'h-14 w-14 bg-blue-500 text-white text-sm font-medium shadow-lg',
         className
       )}
     >

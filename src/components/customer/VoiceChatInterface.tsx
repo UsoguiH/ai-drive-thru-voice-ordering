@@ -17,6 +17,7 @@ import {
 } from '@/components/ai-elements/message';
 import { SaudiRiyal } from '@/components/ui/SaudiRiyal';
 import { nanoid } from 'nanoid';
+import { getFoodImage } from '@/lib/food-images';
 
 // Saudi Riyal Symbol Component
 const SARSymbol = () => (
@@ -277,12 +278,12 @@ export default function VoiceChatInterface({
                           <div ref={orderItemsRef} className="mb-4">
                             <Message from="user">
                               <MessageContent from="user">
-                                <div className="bg-gray-800/50 rounded-2xl shadow-sm border border-white/10 p-8 min-w-[800px]" dir="rtl">
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 min-w-[800px]" dir="rtl">
                                   {/* Simple Items Count Header */}
                                   <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-2">
                                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                      <p className="text-sm text-gray-500">{currentItems.length} أصناف</p>
+                                      <p className="text-sm text-gray-900">{currentItems.length} أصناف</p>
                                     </div>
                                   </div>
 
@@ -298,16 +299,28 @@ export default function VoiceChatInterface({
                                           delay: itemIndex * 0.1,
                                           ease: "easeOut"
                                         }}
-                                        className="flex items-center gap-4 p-4 bg-gray-700/50 rounded-xl border border-white/5"
+                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200"
                                       >
-                                        {/* Item Image Placeholder */}
-                                        <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/10">
-                                          <div className="w-8 h-8 bg-gray-600 rounded-lg"></div>
+                                        {/* Item Image */}
+                                        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0 border border-gray-300 overflow-hidden">
+                                          {getFoodImage(isRTL && item.nameAr ? item.nameAr : item.name) ? (
+                                            <img
+                                              src={getFoodImage(isRTL && item.nameAr ? item.nameAr : item.name)!}
+                                              alt={isRTL && item.nameAr ? item.nameAr : item.name}
+                                              className="w-full h-full object-cover"
+                                              onError={(e) => {
+                                                // Fallback to placeholder if image fails to load
+                                                e.currentTarget.src = '/food-images/default-food.svg';
+                                              }}
+                                            />
+                                          ) : (
+                                            <div className="w-8 h-8 bg-gray-400 rounded-lg"></div>
+                                          )}
                                         </div>
 
                                         {/* Item Details */}
                                         <div className="flex-1 min-w-0">
-                                          <h4 className="font-semibold text-white text-lg mb-1">
+                                          <h4 className="font-semibold text-gray-900 text-lg mb-1">
                                             {isRTL && item.nameAr ? item.nameAr : item.name}
                                           </h4>
 
@@ -331,15 +344,15 @@ export default function VoiceChatInterface({
 
                                         {/* Quantity Display */}
                                         <div className="flex flex-col items-center">
-                                          <span className="text-xs text-gray-500 font-medium">الكمية</span>
-                                          <div className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded-lg border-2 border-green-500 mt-1">
+                                          <span className="text-xs text-gray-900 font-medium">الكمية</span>
+                                          <div className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border-2 border-green-500 mt-1">
                                             <span className="text-lg font-bold text-green-600">{item.quantity}</span>
                                           </div>
                                         </div>
 
                                         {/* Price */}
                                         <div className="text-left">
-                                          <p className="text-lg font-semibold text-white flex items-center gap-1 flex-row-reverse">
+                                          <p className="text-lg font-semibold text-gray-900 flex items-center gap-1 flex-row-reverse">
                                             {(item.price * item.quantity).toFixed(2)}
                                             <SARSymbol />
                                           </p>
@@ -349,9 +362,9 @@ export default function VoiceChatInterface({
                                   </div>
 
                                   {/* Total Summary */}
-                                  <div className="mt-6 pt-6 border-t border-white/10">
+                                  <div className="mt-6 pt-6 border-t border-gray-200">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-xl font-semibold text-white">الإجمالي</span>
+                                      <span className="text-xl font-semibold text-gray-900">الإجمالي</span>
                                       <span className="text-3xl font-bold text-green-600 flex items-center gap-2 flex-row-reverse">
                                         {totalAmount.toFixed(2)}
                                         <SARSymbol />
